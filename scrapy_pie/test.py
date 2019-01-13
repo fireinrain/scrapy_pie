@@ -24,7 +24,7 @@ def test_selector():
 
 
 def test_range():
-    rangs = [i for i in range(2, 311)]
+    rangs = [i for i in range(2, 313)]
     print(rangs)
 
 
@@ -45,6 +45,6 @@ def test_db():
 
 if __name__ == '__main__':
     # test_selector()
-    # test_range()
+    test_range()
     # test_encode()
-    test_config()
+    # test_config()

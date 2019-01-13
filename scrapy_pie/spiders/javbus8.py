@@ -56,6 +56,6 @@ class Javbus8Spider(scrapy.Spider):
         # self.log(len(self.page_url_set))
 
         # 模拟解析page_url
-        for page in [self.start_urls[0] + "page/" + str(i) for i in range(2, 310)]:
+        for index, page in enumerate([self.start_urls[0] + "page/" + str(i) for i in range(2, 313)]):
+            headers["referer"] = self.start_urls[0] + "page/" + str(index + 1)
             yield scrapy.Request(page, callback=self.parse, headers=headers)
-
