@@ -35,5 +35,5 @@ headers = {
     'User-Agent': random.choice(useragent),
     'Accept-Encoding': 'gzip, deflate, sdch',
     'Accept-Language': 'zh-CN,zh;q=0.8',
-    'upgrade-insecure-requests': '1',
-    'cookie': 'HstCfa4021709=1522136187682; c_ref_4021709=https%3A%2F%2Fwww.javbus.xyz%2F; __dtsu=1FE704456EFB905A641FA1750253DC3F; PHPSESSID=laamfqaloifnnlo4vo04c57oo2; __cfduid=dce470d4681efbc63bac14705f5fa87c91535213588; HstCmu4021709=1546164010640; HstCnv4021709=105; HstCns4021709=131; existmag=all; HstCla4021709=1547317510747; HstPn4021709=52; HstPt4021709=2318'}
+    'upgrade-insecure-requests': '1'
+}

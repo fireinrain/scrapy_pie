@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 import scrapy
 from scrapy_pie.configure import headers
 from scrapy_pie.items import ScrapyPieItem
@@ -8,15 +10,27 @@ class Javbus8Spider(scrapy.Spider):
     name = 'javbus8'
     allowed_domains = ['javbus8.pw']
     start_urls = ['http://javbus8.pw/']
+    cookie = 'HstCfa4021709=1522136187682; ' \
+             'c_ref_4021709=https%3A%2F%2Fwww.javbus.xyz%2F; ' \
+             '__dtsu=1FE704456EFB905A641FA1750253DC3F; ' \
+             'PHPSESSID=laamfqaloifnnlo4vo04c57oo2; ' \
+             '__cfduid=dce470d4681efbc63bac14705f5fa87c91535213588; ' \
+             'HstCmu4021709=1546164010640; HstCnv4021709=105; ' \
+             'HstCns4021709=131; existmag=all; HstCla4021709=1547317510747; ' \
+             'HstPn4021709=52; HstPt4021709=2318'
 
-    page_url_set = set([start_urls[0], start_urls[0] + "page/1"])
+    # page_url_set = set([start_urls[0], start_urls[0] + "page/1"])
 
     # pages = [start_urls[0] + "page/" + str(i) for i in range(2, 310)]
+    def __init__(self):
+        self.javbus_header = headers
+        self.javbus_header["cookie"] = self.cookie
+        # self.cookie_set = set()
 
     # 使用代理请求
     def start_requests(self):
         for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.parse, headers=headers)
+            yield scrapy.Request(url, callback=self.parse, headers=self.javbus_header)
 
     def parse(self, response):
         # ['https://www.javbus8.pw/YAL-119']
@@ -26,6 +40,10 @@ class Javbus8Spider(scrapy.Spider):
         # ['2019-01-04']
         # ['高清', '前日新種']
         # ['高清']
+        # cookie = response.headers.getlist('Set-Cookie')[0].split(';')[0]
+        # print(f"cookie:{cookie}")
+        # if cookie not in self.cookie_set:
+        #     self.cookie_set.add(cookie)
         film_a_tags = response.xpath('//*[@id="waterfall"]/div/a')
         for film in film_a_tags:
             film_cover_item = ScrapyPieItem()
@@ -58,4 +76,8 @@ class Javbus8Spider(scrapy.Spider):
         # 模拟解析page_url
         for index, page in enumerate([self.start_urls[0] + "page/" + str(i) for i in range(2, 313)]):
             headers["referer"] = self.start_urls[0] + "page/" + str(index + 1)
+
+            # 随机在cookie池中获取一个cookie
+            # self.javbus_header["cookie"] = random.choice(self.cookie_set)
+
             yield scrapy.Request(page, callback=self.parse, headers=headers)
