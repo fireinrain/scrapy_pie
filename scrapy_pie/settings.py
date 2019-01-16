@@ -54,7 +54,7 @@ COOKIES_ENABLED = False
 DOWNLOADER_MIDDLEWARES = {
     # 'scrapy_pie.middlewares.ScrapyPieDownloaderMiddleware': 543,
     # ss代理
-    'scrapy_pie.middlewares.ScrapyPieProxyDownMiddleware': 2,
+    'scrapy_pie.middlewares.ScrapyPieProxyDownMiddleware': 1,
 
 }
 

@@ -7,6 +7,8 @@
 
 from scrapy import signals
 
+from scrapy_pie.spiders.javbus8 import Javbus8Spider
+
 
 class ScrapyPieSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -128,7 +130,18 @@ class ScrapyPieProxyDownMiddleware(object):
         #   installed downloader middleware will be called
         # spider.logger.info("ScrapyPieProxyDownMiddleware process_request: request = % s, spider = % s", request, spider)
 
-        request.meta['proxy'] = "http://10.8.1.104:1081"
+        if spider.name == 'javbus8':
+            request.meta['proxy'] = "http://10.8.1.179:1081"
+            spider.logger.info(f"正在使用ss代理：{request.meta['proxy']}")
+        else:
+            spider.logger.info(f"不使用代理")
+            pass
+        # 定制一下，只有是javbus8 的spider 才需要代理
+        # 也就是被墙的的网站才需要ss代理
+        # spider.logger.info(f"类型：{type(spider)}")
+        # if isinstance(spider, Javbus8Spider):
+        #     request.meta['proxy'] = "http://10.8.1.179:1081"
+        #     spider.logger.info(f"正在使用ss代理：{request.meta['proxy']}")
         # spider.logger.info("request.meta % s", request.meta)
         return None
 

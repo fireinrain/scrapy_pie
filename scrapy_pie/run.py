@@ -12,7 +12,9 @@
 from scrapy import cmdline
 
 if __name__ == '__main__':
-    cmdline.execute(['scrapy', 'crawl', 'javbus8'])
-    # cmdline.execute(['scrapy', 'crawl', 'baidu'])
+    # cmdline.execute(['scrapy', 'crawl', 'javbus8'])
+    # cmdline.execute(['scrapy', 'crawl', 'shtorrent'])
+
+    cmdline.execute(['scrapy', 'crawl', 'baidu'])
     # cmdline.execute(['scrapy', 'crawl', 'google'])
 
