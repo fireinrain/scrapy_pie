@@ -10,7 +10,10 @@ from scrapy_pie.configure import sht_headers
 class ShtorrentSpider(scrapy.Spider):
     name = 'shtorrent'
     allowed_domains = ['sehuatang.org']
-    start_urls = ['http://sehuatang.org/']
+    # 有时你填写http也可以返回正确的response
+    # 但是最好写成和浏览器访问的一支
+    # 要不然会报错：https://github.com/scrapy/scrapy/issues/3103
+    start_urls = ['https://sehuatang.org/']
 
     def __init__(self):
         self.header = sht_headers
