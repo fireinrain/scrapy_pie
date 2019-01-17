@@ -22,4 +22,11 @@ class ShtorrentSpider(scrapy.Spider):
         yield scrapy.Request(self.start_urls[0], callback=self.parse, headers=self.header)
 
     def parse(self, response):
-        print(response)
+        # 抽取出默认页的分类url
+        all_tags_urls = response.xpath('//div[contains(@id,"category_")]')
+        for cat_url in all_tags_urls:
+            # "//*[@id="category_1"]/table/tbody/tr[1]/td[1]/dl/dt/a"
+            # 找到原创BT栏目
+            if cat_url.xpath("@id").extract_first() == "category_1":
+                tag_url = cat_url.xpath(".//*/dl/dt/a").extract()
+                print(tag_url)
