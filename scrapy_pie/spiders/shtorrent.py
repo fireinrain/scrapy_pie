@@ -5,6 +5,7 @@ import scrapy
 # 该网页的中文字幕种子下载，并将相关数据保存到数据库中
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
+from scrapy_pie.items import ShtCategoryItem
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -24,9 +25,36 @@ class ShtorrentSpider(scrapy.Spider):
     def parse(self, response):
         # 抽取出默认页的分类url
         all_tags_urls = response.xpath('//div[contains(@id,"category_")]')
+        tags_urls_list = []
         for cat_url in all_tags_urls:
             # "//*[@id="category_1"]/table/tbody/tr[1]/td[1]/dl/dt/a"
             # 找到原创BT栏目
             if cat_url.xpath("@id").extract_first() == "category_1":
-                tag_url = cat_url.xpath(".//*/dl/dt/a").extract()
-                print(tag_url)
+                tag_url = cat_url.xpath(".//*/dl/dt/a")
+                for item_url in tag_url:
+                    sht_category_item = ShtCategoryItem()
+                    a_link_name = item_url.xpath(".//text()").extract_first()
+                    a_link = self.start_urls[0]+item_url.xpath(".//@href").extract_first()
+                    sht_category_item["category_name"] = a_link_name
+                    sht_category_item["category_url"] = a_link
+
+                    tags_urls_list.append([a_link_name, a_link])
+                    yield sht_category_item
+                    # print(a_link)
+                    # print(a_link_name)
+                    # print("--------------")
+        # yield tags_urls_list
+
+        # 高清中文字幕
+        for item in tags_urls_list:
+            if item[0] == "高清中文字幕":
+                yield scrapy.Request(item[1], callback=self.parse_item_page, headers=self.header)
+
+    def parse_item_page(self, response):
+        """
+        解析具体的分类url
+        :param response:
+        :return:
+        """
+        print(f"进入解析{response}")
+        pass

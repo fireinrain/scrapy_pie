@@ -8,6 +8,7 @@ from twisted.enterprise import adbapi
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
+from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem
 from scrapy_pie.utils import to_mysql_daatetime
 
 
@@ -54,7 +55,7 @@ class ScrapyPiePipeline(object):
     #     print(item)
 
 
-# 同步入库
+# javbus同步入库
 class ScrapiesPipelineSync(object):
     def __init__(self, dbpool):
         self.db = dbpool
@@ -76,15 +77,51 @@ class ScrapiesPipelineSync(object):
         return cls(dbpool)
 
     def process_item(self, item, spider):
-        # if isinstance(item, ScrapiesItem):
-        sql = "insert into film_cover(`film_name`,`film_code`,`film_url`,`film_pub_date`," \
-              "`film_cover_url`,`create_date`) value('%s','%s','%s','%s','%s','%s')" % (
-                  item['film_name'], item['film_code'], item['film_url'], item['film_pub_date'],
-                  item['film_cover_url'],
-                  to_mysql_daatetime())
-        self.cursor.execute(sql)
-        self.db.commit()
-        # return item
+        # 过滤 只对
+        if isinstance(item, JavbusMiniItem):
+            sql = "insert into film_cover(`film_name`,`film_code`,`film_url`,`film_pub_date`," \
+                  "`film_cover_url`,`create_date`) value('%s','%s','%s','%s','%s','%s')" % (
+                      item['film_name'], item['film_code'], item['film_url'], item['film_pub_date'],
+                      item['film_cover_url'],
+                      to_mysql_daatetime())
+            self.cursor.execute(sql)
+            self.db.commit()
+        else:
+            return item
+
+    def close_spider(self, spider):
+        # self.db.commit()
+        self.db.close()
+
+
+################################################
+
+# shtorrent 同步入库
+class ShtorrentPipelineSync(object):
+    def __init__(self, dbpool):
+        self.db = dbpool
+        self.cursor = self.db.cursor()
+
+    @classmethod
+    def from_settings(cls, settings):
+        dbparams = dict(
+            host=settings['MYSQL_HOST'],
+            db=settings['MYSQL_DBNAME'],
+            user=settings['MYSQL_USER'],
+            passwd=settings['MYSQL_PASS'],
+            charset='utf8',
+            cursorclass=MySQLdb.cursors.DictCursor,
+            use_unicode=True,
+        )
+        dbpool = MySQLdb.connect(**dbparams)
+
+        return cls(dbpool)
+
+    def process_item(self, item, spider):
+        if isinstance(item, ShtCategoryItem):
+            print(item)
+        else:
+            return item
 
     def close_spider(self, spider):
         # self.db.commit()

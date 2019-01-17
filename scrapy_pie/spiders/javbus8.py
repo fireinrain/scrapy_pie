@@ -3,7 +3,7 @@ import random
 
 import scrapy
 from scrapy_pie.configure import headers
-from scrapy_pie.items import ScrapyPieItem
+from scrapy_pie.items import JavbusMiniItem
 
 
 class Javbus8Spider(scrapy.Spider):
@@ -46,7 +46,7 @@ class Javbus8Spider(scrapy.Spider):
         #     self.cookie_set.add(cookie)
         film_a_tags = response.xpath('//*[@id="waterfall"]/div/a')
         for film in film_a_tags:
-            film_cover_item = ScrapyPieItem()
+            film_cover_item = JavbusMiniItem()
             film_cover_item["film_url"] = film.xpath('./@href').extract_first()
             film_cover_item["film_cover_url"] = film.xpath('.//div[1]/img/@src').extract_first()
             film_cover_item["film_name"] = film.xpath('.//div[1]/img/@title').extract_first()

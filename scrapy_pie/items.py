@@ -8,7 +8,8 @@
 import scrapy
 
 
-class ScrapyPieItem(scrapy.Item):
+# javbus
+class JavbusMiniItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     # 影片名字
@@ -21,3 +22,12 @@ class ScrapyPieItem(scrapy.Item):
     film_pub_date = scrapy.Field()
     # 影片mini封面
     film_cover_url = scrapy.Field()
+
+
+# shtorrent
+# 1 类目item
+class ShtCategoryItem(scrapy.Item):
+    # 类别名字
+    category_name = scrapy.Field()
+    # 类别链接
+    category_url = scrapy.Field()

@@ -68,7 +68,10 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     # 'scrapy_pie.pipelines.ScrapyPiePipeline': 300,
+    # javbus
     'scrapy_pie.pipelines.ScrapiesPipelineSync': 2,
+    # shtorrent
+    'scrapy_pie.pipelines.ShtorrentPipelineSync': 3,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
