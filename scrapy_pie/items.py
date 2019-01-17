@@ -31,3 +31,14 @@ class ShtCategoryItem(scrapy.Item):
     category_name = scrapy.Field()
     # 类别链接
     category_url = scrapy.Field()
+
+
+class ShtItemCountItem(scrapy.Item):
+    # 有码
+    code_kind = scrapy.Field()
+    code_count = scrapy.Field()
+    # 无码
+    nocode_kind = scrapy.Field()
+    nocode_count = scrapy.Field()
+    # 总数
+    total = scrapy.Field()

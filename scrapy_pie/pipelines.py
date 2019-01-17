@@ -8,7 +8,7 @@ from twisted.enterprise import adbapi
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
-from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem
+from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem
 from scrapy_pie.utils import to_mysql_daatetime
 
 
@@ -119,6 +119,12 @@ class ShtorrentPipelineSync(object):
 
     def process_item(self, item, spider):
         if isinstance(item, ShtCategoryItem):
+            print(item)
+        elif isinstance(item, ShtItemCountItem):
+            # 做判断是否要更新
+            if item["total"] == 676:
+                spider.logger.warn("无需更新,停止爬虫")
+                spider.close(spider, "数据库为最新无需更新")
             print(item)
         else:
             return item

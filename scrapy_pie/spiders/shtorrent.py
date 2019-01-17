@@ -5,7 +5,7 @@ import scrapy
 # 该网页的中文字幕种子下载，并将相关数据保存到数据库中
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
-from scrapy_pie.items import ShtCategoryItem
+from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -34,7 +34,7 @@ class ShtorrentSpider(scrapy.Spider):
                 for item_url in tag_url:
                     sht_category_item = ShtCategoryItem()
                     a_link_name = item_url.xpath(".//text()").extract_first()
-                    a_link = self.start_urls[0]+item_url.xpath(".//@href").extract_first()
+                    a_link = self.start_urls[0] + item_url.xpath(".//@href").extract_first()
                     sht_category_item["category_name"] = a_link_name
                     sht_category_item["category_url"] = a_link
 
@@ -57,4 +57,20 @@ class ShtorrentSpider(scrapy.Spider):
         :return:
         """
         print(f"进入解析{response}")
-        pass
+        # 解析有多少部 决定要不要更新数据库
+        '//*[@id="thread_types"]/li[2]/a'
+        '//*[@id="thread_types"]/li[3]/a'
+        code_item_kind = response.xpath('//*[@id="thread_types"]/li[2]/a/text()').extract_first()
+        code_item_count = response.xpath('//*[@id="thread_types"]/li[2]/a/span/text()').extract_first()
+
+        nocode_item_kind = response.xpath('//*[@id="thread_types"]/li[3]/a/text()').extract_first()
+        nocode_item_count = response.xpath('//*[@id="thread_types"]/li[3]/a/span/text()').extract_first()
+
+        shtitemcountitem = ShtItemCountItem()
+        shtitemcountitem["code_kind"] = code_item_kind
+        shtitemcountitem["code_count"] = code_item_count
+        shtitemcountitem["nocode_kind"] = nocode_item_kind
+        shtitemcountitem["nocode_count"] = nocode_item_count
+        shtitemcountitem["total"] = int(code_item_count) + int(nocode_item_count)
+        yield shtitemcountitem
+        # print(f"{code_item_kind}:{code_item_count}/{nocode_item_kind}:{nocode_item_count}")
