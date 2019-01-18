@@ -88,7 +88,8 @@ class ShtorrentSpider(scrapy.Spider):
         else:
             print(page_list_url)
             for page in page_list_url:
-                yield scrapy.Request(page, callback=self.parse_item_film, headers=self.header)
+                # dont_filter=True 不要过滤重复的请求
+                yield scrapy.Request(page, callback=self.parse_item_film, headers=self.header, dont_filter=True)
 
     def parse_item_film(self, response):
         title = response.xpath('//*[contains(@id,"normalthread_")]/tr/th/a/text()').extract()
