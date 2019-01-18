@@ -16,6 +16,9 @@ class ShtorrentSpider(scrapy.Spider):
     # 要不然会报错：https://github.com/scrapy/scrapy/issues/3103
     start_urls = ['https://sehuatang.org/']
 
+    # 是否需要爬去
+    need_scrapy = True
+
     def __init__(self):
         self.header = sht_headers
 
@@ -74,3 +77,19 @@ class ShtorrentSpider(scrapy.Spider):
         shtitemcountitem["total"] = int(code_item_count) + int(nocode_item_count)
         yield shtitemcountitem
         # print(f"{code_item_kind}:{code_item_count}/{nocode_item_kind}:{nocode_item_count}")
+
+        page_list = response.xpath('//*[@id="fd_page_bottom"]/div/a/@href').extract()
+        # 'ml'
+        page_prefix = page_list[0].split(".")[0][:-2]
+        page_num_max = max([int(i.split("-")[2].split(".")[0]) for i in page_list])
+        page_list_url = [self.start_urls[0] + page_prefix + "-" + str(i) + ".html" for i in range(1, page_num_max + 1)]
+        if not self.need_scrapy:
+            print("哈哈哈哈哈，不需要爬去数据了")
+        else:
+            print(page_list_url)
+            for page in page_list_url:
+                yield scrapy.Request(page, callback=self.parse_item_film, headers=self.header)
+
+    def parse_item_film(self, response):
+        title = response.xpath('//*[contains(@id,"normalthread_")]/tr/th/a/text()').extract()
+        print(f"title: {title}")
