@@ -62,7 +62,8 @@ class BaiduSpider(scrapy.Spider):
         # film_introduction = response.xpath('//*[@class="t_f"]/text()[8]').extract_first()
 
         # '//*[@id="aimg_20280"]'
-        film_preview_url = response.xpath('//*[@class="t_f"]/ignore_js_op/img[contains(@id,"aimg_")]/@file').extract()
+        film_preview_url = response.xpath('//*[@class="t_f"]/img/@file').extract_first()
+        film_preview_url2 = response.xpath('//*[@class="t_f"]/ignore_js_op/img[contains(@id,"aimg_")]/@file').extract_first()
 
         magnent_str = response.xpath('//*[contains(@id,"code_")]/ol/li/text()').extract_first()
 
@@ -78,6 +79,7 @@ class BaiduSpider(scrapy.Spider):
         print(film_code_flag)
         print(seed_period)
         print(film_preview_url)
+        print(film_preview_url2)
         print(magnent_str)
         print(torrent_url)
         print(torrent_name)
