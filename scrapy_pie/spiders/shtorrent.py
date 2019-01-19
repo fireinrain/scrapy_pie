@@ -19,6 +19,9 @@ class ShtorrentSpider(scrapy.Spider):
     # 是否需要爬去
     need_scrapy = True
 
+    # 作品链接
+    films_link_list = []
+
     def __init__(self):
         self.header = sht_headers
 
@@ -92,5 +95,34 @@ class ShtorrentSpider(scrapy.Spider):
                 yield scrapy.Request(page, callback=self.parse_item_film, headers=self.header, dont_filter=True)
 
     def parse_item_film(self, response):
-        title = response.xpath('//*[contains(@id,"normalthread_")]/tr/th/a/text()').extract()
-        print(f"title: {title}")
+        """
+        抽取每一页的film 列表url，然后依次访问
+        :param response:
+        :return:
+        """
+        # ['thread-71669-1-3.html', 'thread-71668-1-3.html', 'thread-71667-1-3.html', ]
+        # '//*[@id="normalthread_74503"]/tr/th/time'
+        update_date = response.xpath('//tbody[contains(@id,"normalthread_")]/tr/th/time/text()').extract()
+        item_url = response.xpath('//tbody[contains(@id,"normalthread_")]/tr/th/a[2]/@href').extract()
+        item_name = response.xpath('//tbody[contains(@id,"normalthread_")]/tr/th/a[2]/text()').extract()
+
+        # ['https://sehuatang.org/thread-71669-1-3.html', ]
+        per_item_urls = [self.start_urls[0] + i for i in item_url]
+
+        # print(f"date: {update_date}")
+        # print(f"title: {item_url}")
+        # print(f"数量：{len(item_url)}")
+        # print(f"name: {item_name}")
+
+        # 对每一页的film url请求
+        for url in per_item_urls:
+            yield scrapy.Request(url, callback=self.parse_file_page, headers=self.header, dont_filter=True)
+
+    def parse_file_page(self, response):
+        """
+        解析作品页面
+        :param response:
+        :return:
+        """
+        print("----->ok")
+        pass
