@@ -130,7 +130,7 @@ class ScrapyPieProxyDownMiddleware(object):
         #   installed downloader middleware will be called
         # spider.logger.info("ScrapyPieProxyDownMiddleware process_request: request = % s, spider = % s", request, spider)
 
-        if spider.name == 'javbus8':
+        if spider.name in ['javbus8', 'shtorrent']:
             request.meta['proxy'] = "http://10.8.1.179:1081"
             spider.logger.info(f"正在使用ss代理：{request.meta['proxy']}")
         else:

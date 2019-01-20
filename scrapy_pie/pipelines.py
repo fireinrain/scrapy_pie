@@ -122,7 +122,7 @@ class ShtorrentPipelineSync(object):
             print(item)
         elif isinstance(item, ShtItemCountItem):
             # 做判断是否要更新
-            if item["total"] == 684:
+            if item["total"] == 699:
                 spider.logger.warn("无需更新,停止爬虫")
                 spider.need_scrapy = False
                 spider.close(spider, "数据库为最新无需更新")

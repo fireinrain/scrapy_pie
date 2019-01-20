@@ -5,7 +5,7 @@ import scrapy
 # 该网页的中文字幕种子下载，并将相关数据保存到数据库中
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
-from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem
+from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilm
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -122,40 +122,42 @@ class ShtorrentSpider(scrapy.Spider):
         """
         #  解析作品页面
         格式：
-        # DVAJ-355 女友不在家的三天里和她的好朋友做爱不停
-        #
-        # 【影片名称】：女友不在家的三天里和她的好朋友做爱不停
-        #
-        # 【出演女优】：里梨夏 富田優衣
-        #
-        # 【影片格式】：MP4
-        #
-        # 【影片大小】：5.46GB
-        #
-        # 【是否有码】：有码
-        #
-        # 【种子期限】：5种或健康度1000
-        # ['https://www.sehuatuchuang.com/tupian/forum/201901/19/115021cl0gek57rcrx7oa5.jpg']
-        # magnet:?xt=urn:btih:9FBAEB5A0CFAB8E379FCACE5FA05D209E4C813F2
-        # forum.php?mod=attachment&aid=NzAyNDF8ODM0NzExMmJ8MTU0NzkyMzI1OHwwfDc0OTcy
-        # [7sht.me]DVAJ-355-C.torrent
+         MIDE-604 性欲太强在俱乐部和水卜樱直接做[高清中文字幕]
+
+        【影片名称】：性欲太强在俱乐部和水卜樱直接做
+
+        【出演女优】：水卜さくら
+
+        【影片格式】：MP4
+
+        【影片大小】：6.14GB
+
+        【是否有码】：有码
+
+        【种子期限】：5种或健康度1000
+        https://jp.netcdn.space/digital/video/mide00604/mide00604pl.jpg
+        https://www.sehuatuchuang.com/tupian/forum/201812/16/105130jthnzoiorwncc5ix.jpg
+        magnet:?xt=urn:btih:118C697D1B929D402B19A12BD52D84BDF29624CF
+        forum.php?mod=attachment&aid=NjEzNDF8NzAzY2I5YmN8MTU0Nzk5NzA4MHwwfDYxMTk1
+        [7sht.me]mide-604-C.torrent
         :param response:
         :return:
         """
+        shtorrentfilm = ShtorrentFilm()
         # 标题和番号
         code_and_title = response.xpath('//*[@id="thread_subject"]/text()').extract_first()
         # 片名
-        film_name = response.xpath('//*[@class="t_f"]/text()[1]').extract_first()  # .split("：")[1].strip()
+        film_name = response.xpath('//*[@class="t_f"]/text()[1]').extract_first().split("：")[1].strip()
         # 演员
-        film_stars = response.xpath('//*[@class="t_f"]/text()[2]').extract_first()
+        film_stars = response.xpath('//*[@class="t_f"]/text()[2]').extract_first().split("：")[1].strip()
         # 影片格式
-        film_format = response.xpath('//*[@class="t_f"]/text()[3]').extract_first()
+        film_format = response.xpath('//*[@class="t_f"]/text()[3]').extract_first().split("：")[1].strip()
         # 影片大小
-        film_size = response.xpath('//*[@class="t_f"]/text()[4]').extract_first()
+        film_size = response.xpath('//*[@class="t_f"]/text()[4]').extract_first().split("：")[1].strip()
         # 是否有码
-        film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first()
+        film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first().split("：")[1].strip()
         # 种子期限
-        seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first()
+        seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first().split("：")[1].strip()
         # 影片预览
         # film_preview = response.xpath('//*[@class="t_f"]/text()[7]').extract_first()
         # 影片介绍
@@ -170,8 +172,24 @@ class ShtorrentSpider(scrapy.Spider):
 
         # '//*[@id="pid106962"]/tbody/tr[1]/td[2]/div[2]/div/div[1]/div[2]/ignore_js_op'
         # '//*[@id="pid106962"]/tbody/tr[1]/td[2]/div[2]/div/div[1]/div[2]/ignore_js_op/dl/dd/p[1]'
-        torrent_url = response.xpath('//*[@class="attnm"]/a/@href').extract_first()
+        torrent_url = self.start_urls[0] + response.xpath('//*[@class="attnm"]/a/@href').extract_first()
         torrent_name = response.xpath('//*[@class="attnm"]/a/text()').extract_first()
+
+        # 无聊的赋值
+        shtorrentfilm["code_and_title"] = code_and_title
+        shtorrentfilm["film_name"] = film_name
+        shtorrentfilm["film_format"] = film_format
+        shtorrentfilm["film_size"] = film_size
+        shtorrentfilm["film_code_flag"] = film_code_flag
+        shtorrentfilm["seed_period"] = seed_period
+        shtorrentfilm["film_preview_url"] = film_preview_url
+        shtorrentfilm["film_preview_url2"] = film_preview_url2
+        shtorrentfilm["magnent_str"] = magnent_str
+        shtorrentfilm["torrent_url"] = torrent_url
+        shtorrentfilm["torrent_name"] = torrent_name
+
+        # 返回给pipeline处理
+        yield shtorrentfilm
         print(code_and_title)
         print(film_name)
         print(film_stars)
