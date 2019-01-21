@@ -104,6 +104,6 @@ ITEM_PIPELINES = {
 
 # vm数据库
 MYSQL_HOST = '192.168.11.117'
-MYSQL_DBNAME = 'javbus_db'
+MYSQL_DBNAME = {"scrapy_pie": "scrapy_pie_db"}
 MYSQL_USER = 'root'
 MYSQL_PASS = 'sunriseme1994'

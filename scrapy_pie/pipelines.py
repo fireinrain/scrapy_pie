@@ -20,7 +20,7 @@ class ScrapyPiePipeline(object):
     def from_settings(cls, settings):
         dbparams = dict(
             host=settings['MYSQL_HOST'],
-            db=settings['MYSQL_DBNAME'],
+            db=settings['MYSQL_DBNAME']["scrapy_pie"],
             user=settings['MYSQL_USER'],
             passwd=settings['MYSQL_PASS'],
             charset='utf8',
@@ -65,7 +65,7 @@ class ScrapiesPipelineSync(object):
     def from_settings(cls, settings):
         dbparams = dict(
             host=settings['MYSQL_HOST'],
-            db=settings['MYSQL_DBNAME'],
+            db=settings['MYSQL_DBNAME']["scrapy_pie"],
             user=settings['MYSQL_USER'],
             passwd=settings['MYSQL_PASS'],
             charset='utf8',
@@ -106,7 +106,7 @@ class ShtorrentPipelineSync(object):
     def from_settings(cls, settings):
         dbparams = dict(
             host=settings['MYSQL_HOST'],
-            db=settings['MYSQL_DBNAME'],
+            db=settings['MYSQL_DBNAME']["scrapy_pie"],
             user=settings['MYSQL_USER'],
             passwd=settings['MYSQL_PASS'],
             charset='utf8',

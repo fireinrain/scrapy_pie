@@ -47,6 +47,8 @@ class ShtItemCountItem(scrapy.Item):
 class ShtorrentFilm(scrapy.Item):
     # 番号 作品名
     code_and_title = scrapy.Field()
+    # 番号
+    code = scrapy.Field()
     # 名称
     film_name = scrapy.Field()
     # 演员

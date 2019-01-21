@@ -43,8 +43,14 @@ def test_db():
     pass
 
 
+def test_code():
+    torrent_name  = "[7sht.me]MIDE-458-C.torrent"
+    print(torrent_name.split("]")[1].split(".")[0][:-2])
+
+
 if __name__ == '__main__':
     # test_selector()
-    test_range()
+    # test_range()
     # test_encode()
     # test_config()
+    test_code()

@@ -174,7 +174,7 @@ class ShtorrentSpider(scrapy.Spider):
         # '//*[@id="pid106962"]/tbody/tr[1]/td[2]/div[2]/div/div[1]/div[2]/ignore_js_op/dl/dd/p[1]'
         torrent_url = self.start_urls[0] + response.xpath('//*[@class="attnm"]/a/@href').extract_first()
         torrent_name = response.xpath('//*[@class="attnm"]/a/text()').extract_first()
-
+        code =  torrent_name.split("]")[1].split(".")[0][:-2]
         # 无聊的赋值
         shtorrentfilm["code_and_title"] = code_and_title
         shtorrentfilm["film_name"] = film_name
@@ -187,6 +187,7 @@ class ShtorrentSpider(scrapy.Spider):
         shtorrentfilm["magnent_str"] = magnent_str
         shtorrentfilm["torrent_url"] = torrent_url
         shtorrentfilm["torrent_name"] = torrent_name
+        shtorrentfilm["code"] = code
 
         # 返回给pipeline处理
         yield shtorrentfilm
@@ -202,4 +203,5 @@ class ShtorrentSpider(scrapy.Spider):
         print(magnent_str)
         print(torrent_url)
         print(torrent_name)
+        print(code)
         print("-------------------------------------------------------------------------")
