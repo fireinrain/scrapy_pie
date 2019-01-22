@@ -8,7 +8,7 @@ from twisted.enterprise import adbapi
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
-from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem
+from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilm
 from scrapy_pie.utils import to_mysql_daatetime
 
 
@@ -127,8 +127,30 @@ class ShtorrentPipelineSync(object):
                 spider.need_scrapy = False
                 spider.close(spider, "数据库为最新无需更新")
             print(item)
+        elif isinstance(item, ShtorrentFilm):
+            insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
+                  "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
+                  "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
+                  "'%s','%s','%s','%s','%s')" % \
+                  (
+                      item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
+                      item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
+                      item['film_preview_url'], item['film_preview_url2'], item['magnent_str'], item['torrent_url'],
+                      item['torrent_name']
+                  )
+            update_sql = ""
+            # 存入数据库
+            self.cursor.execute("""select * from sht_films where `codes` = %s""", item["codes"])
+            ret = self.cursor.fetchone()
+            if ret:
+                self.cursor.execute(update_sql)
+            else:
+                self.cursor.execute(insert_sql)
+            self.db.commit()
+
         else:
-            return item
+            pass
+        return item
 
     def close_spider(self, spider):
         # self.db.commit()
