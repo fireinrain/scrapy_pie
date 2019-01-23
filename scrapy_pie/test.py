@@ -41,7 +41,49 @@ def test_config():
 
 
 def test_db():
-    pymysql.connect()
+    con = pymysql.connect(host="192.168.11.117",
+                          user="root",
+                          passwd="sunriseme1994",
+                          database="scrapy_pie_db")
+    cursor = con.cursor()
+    item = {'code_and_title': 'PGD-677 淫荡痴女教师小川阿佐美[高清中文字幕]',
+            'codes': 'pgd-677',
+            'film_code_flag': '有码',
+            'film_format': 'MP4',
+            'film_name': '淫荡痴女教师小川阿佐美',
+            'film_preview_url': 'https://jp.netcdn.space/digital/video/pgd00677/pgd00677pl.jpg',
+            'film_preview_url2': 'https://www.sehuatuchuang.com/tupian/forum/201812/20/094141qnptpbpcpb66mm6o.jpg',
+            'film_size': '6.87GB',
+            'film_stars': '小川あさ美',
+            'magnent_str': 'magnet:?xt=urn:btih:46A6CD10F2BA4B2B0425503DE244EFF1C5277B04',
+            'seed_period': '5种或健康度1000',
+            'torrent_name': '[7sht.me]pgd-677-C.torrent',
+            'torrent_url': 'https://sehuatang.org/forum.php?mod=attachment&aid=NjIwNjB8NzQwMDRhNjV8MTU0ODI2Mzk0MXwwfDYyNTA3'}
+
+    insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
+                 "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
+                 "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
+                 "'%s','%s','%s','%s','%s','%s')" % (
+                     item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
+                     item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
+                     item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
+                     item['torrent_url'],
+                     item['torrent_name'])
+
+    update_sql = "UPDATE `sht_films` SET `codes`='%s'," \
+                 "`code_and_title`='%s',`film_name`='%s',`film_stars`='%s'," \
+                 "`film_format`='%s',`film_size`='%s',`film_code_flag`='%s'," \
+                 "`seed_period`='%s',`film_preview_url`='%s',`film_preview_url2`='%s'," \
+                 "`magnent_str`='%s',`torrent_url`='%s',`torrent_name`='%s' WHERE `codes`='%s'" % (
+                     item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
+                     item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
+                     item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
+                     item['torrent_url'],
+                     item['torrent_name'], item['codes'])
+
+    cursor.execute(update_sql)
+    con.commit()
+    print(insert_sql)
 
 
 def test_code():
@@ -61,10 +103,26 @@ def test_error_film_name():
         print(link)
 
 
+def test_extract_codes():
+    a = "[168x.me]ABP-036.torrent"
+    b = "[7sht.me]MIDE-458-C.torrent"
+    start = a.index("]")
+    end = a.rindex(".")
+
+    start1 = b.index("]")
+    end1 = b.rindex(".")
+    print(start, "-", end)
+    print(start1, "-", end1)
+    print("-".join(a[start + 1:end].split("-")[:2]))
+    print("-".join(b[start + 1:end1].split("-")[:2]))
+
+
 if __name__ == '__main__':
     # test_selector()
     # test_range()
     # test_encode()
     # test_config()
     # test_code()
-    test_error_film_name()
+    # test_error_film_name()
+    # test_db()
+    test_extract_codes()
