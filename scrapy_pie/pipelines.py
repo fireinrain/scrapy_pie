@@ -128,40 +128,33 @@ class ShtorrentPipelineSync(object):
                 spider.close(spider, "数据库为最新无需更新")
             print(item)
         elif isinstance(item, ShtorrentFilm):
-            # insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
-            #              "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
-            #              "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
-            #              "'%s','%s','%s','%s','%s')" % \
-            #              (
-            #                  item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
-            #                  item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
-            #                  item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
-            #                  item['torrent_url'],
-            #                  item['torrent_name']
-            #              )
+            insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
+                         "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
+                         "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
+                         "'%s','%s','%s','%s','%s')"
 
-            insert_sql2 = '''
-                insert into
-                    `sht_films`
-                    (`codes`,
-                    `code_and_title`,
-                    `film_name`,
-                    `film_stars`,
-                    `film_format`,
-                    `film_size`,
-                    `film_code_flag`,
-                    `seed_period`,
-                    `film_preview_url`,
-                    `film_preview_url2`,
-                    `magnent_str`,
-                    `torrent_url`,
-                    `torrent_name`)
-                    values (
-                    ?,?,?,?,
-                    ?,?,?,?,
-                    ?,?,?,?,?
-                    )
-                '''
+            # insert_sql2 = '''
+            #     insert into
+            #         `sht_films`
+            #         (`codes`,
+            #         `code_and_title`,
+            #         `film_name`,
+            #         `film_stars`,
+            #         `film_format`,
+            #         `film_size`,
+            #         `film_code_flag`,
+            #         `seed_period`,
+            #         `film_preview_url`,
+            #         `film_preview_url2`,
+            #         `magnent_str`,
+            #         `torrent_url`,
+            #         `torrent_name`)
+            #         values (
+            #         ?,?,?,?,
+            #         ?,?,?,?,
+            #         ?,?,?,?,?
+            #         );
+            #     '''
 
             update_sql = '''
                 UPDATE
@@ -182,23 +175,23 @@ class ShtorrentPipelineSync(object):
                     `torrent_name`=?
                     
                 WHERE
-                    `codes`=?
+                    `codes`=?;
                 '''
 
             # 存入数据库
             self.cursor.execute("""select * from sht_films where `codes` = %s""", item["codes"])
             ret = self.cursor.fetchone()
             if ret:
-                self.cursor.execute(update_sql, (
+                self.cursor.execute(update_sql, [
                     item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
                     item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
                     item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
                     item['torrent_url'],
                     item['torrent_name']
-                ))
+                ])
                 self.db.commit()
             else:
-                self.cursor.execute(insert_sql2, (
+                self.cursor.execute(insert_sql, (
                     item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
                     item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
                     item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],

@@ -146,18 +146,31 @@ class ShtorrentSpider(scrapy.Spider):
         shtorrentfilm = ShtorrentFilm()
         # 标题和番号
         code_and_title = response.xpath('//*[@id="thread_subject"]/text()').extract_first()
-        # 片名
-        film_name = response.xpath('//*[@class="t_f"]/text()[1]').extract_first().split("：")[1].strip()
-        # 演员
-        film_stars = response.xpath('//*[@class="t_f"]/text()[2]').extract_first().split("：")[1].strip()
-        # 影片格式
-        film_format = response.xpath('//*[@class="t_f"]/text()[3]').extract_first().split("：")[1].strip()
-        # 影片大小
-        film_size = response.xpath('//*[@class="t_f"]/text()[4]').extract_first().split("：")[1].strip()
-        # 是否有码
-        film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first().split("：")[1].strip()
-        # 种子期限
-        seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first().split("：")[1].strip()
+        try:
+            # 片名
+            film_name = response.xpath('//*[@class="t_f"]/text()[1]').extract_first().split("：")[1].strip()
+            # 演员
+            film_stars = response.xpath('//*[@class="t_f"]/text()[2]').extract_first().split("：")[1].strip()
+            # 影片格式
+            film_format = response.xpath('//*[@class="t_f"]/text()[3]').extract_first().split("：")[1].strip()
+            # 影片大小
+            film_size = response.xpath('//*[@class="t_f"]/text()[4]').extract_first().split("：")[1].strip()
+            # 是否有码
+            film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first().split("：")[1].strip()
+            # 种子期限
+            seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first().split("：")[1].strip()
+        except Exception as e:
+            film_name = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract_first().split("：")[1].strip()
+            # 演员
+            film_stars = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[4]').extract_first().split("：")[1].strip()
+            # 影片格式
+            film_format = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[5]').extract_first().split("：")[1].strip()
+            # 影片大小
+            film_size = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[6]').extract_first().split("：")[1].strip()
+            # 是否有码
+            film_code_flag = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[7]').extract_first().split("：")[1].strip()
+            # 种子期限
+            seed_period = response.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[8]').extract_first().split("：")[1].strip()
         # 影片预览
         # film_preview = response.xpath('//*[@class="t_f"]/text()[7]').extract_first()
         # 影片介绍
