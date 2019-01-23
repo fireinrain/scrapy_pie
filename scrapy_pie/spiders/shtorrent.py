@@ -176,18 +176,19 @@ class ShtorrentSpider(scrapy.Spider):
         torrent_name = response.xpath('//*[@class="attnm"]/a/text()').extract_first()
         code =  torrent_name.split("]")[1].split(".")[0][:-2]
         # 无聊的赋值
-        shtorrentfilm["code_and_title"] = code_and_title
-        shtorrentfilm["film_name"] = film_name
-        shtorrentfilm["film_format"] = film_format
-        shtorrentfilm["film_size"] = film_size
-        shtorrentfilm["film_code_flag"] = film_code_flag
-        shtorrentfilm["seed_period"] = seed_period
-        shtorrentfilm["film_preview_url"] = film_preview_url
-        shtorrentfilm["film_preview_url2"] = film_preview_url2
-        shtorrentfilm["magnent_str"] = magnent_str
-        shtorrentfilm["torrent_url"] = torrent_url
-        shtorrentfilm["torrent_name"] = torrent_name
-        shtorrentfilm["code"] = code
+        shtorrentfilm["code_and_title"] = str(code_and_title)
+        shtorrentfilm["film_name"] = str(film_name)
+        shtorrentfilm["film_format"] = str(film_format)
+        shtorrentfilm['film_stars'] = str(film_stars)
+        shtorrentfilm["film_size"] = str(film_size)
+        shtorrentfilm["film_code_flag"] = str(film_code_flag)
+        shtorrentfilm["seed_period"] = str(seed_period)
+        shtorrentfilm["film_preview_url"] = str(film_preview_url)
+        shtorrentfilm["film_preview_url2"] = str(film_preview_url2)
+        shtorrentfilm["magnent_str"] = str(magnent_str)
+        shtorrentfilm["torrent_url"] = str(torrent_url)
+        shtorrentfilm["torrent_name"] = str(torrent_name)
+        shtorrentfilm["codes"] = str(code)
 
         # 返回给pipeline处理
         yield shtorrentfilm
