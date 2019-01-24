@@ -121,12 +121,16 @@ class ShtorrentPipelineSync(object):
         if isinstance(item, ShtCategoryItem):
             print(item)
         elif isinstance(item, ShtItemCountItem):
+            select_sql = "select count(*) total_item from `sht_films`"
+            self.cursor.execute(select_sql)
+            result = self.cursor.fetchone()
+            # print(result)  {'total_item': 727}
             # 做判断是否要更新
-            if item["total"] == 699:
+            if item["total"] == int(result['total_item']):
                 spider.logger.warn("无需更新,停止爬虫")
                 spider.need_scrapy = False
                 spider.close(spider, "数据库为最新无需更新")
-            print(item)
+            # print(item)
         elif isinstance(item, ShtorrentFilm):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \

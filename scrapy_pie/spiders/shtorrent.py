@@ -89,6 +89,7 @@ class ShtorrentSpider(scrapy.Spider):
         if not self.need_scrapy:
             print("哈哈哈哈哈，不需要爬去数据了")
         else:
+            print("有数据更新！！！，正在进行爬取")
             print(page_list_url)
             for page in page_list_url:
                 # dont_filter=True 不要过滤重复的请求
