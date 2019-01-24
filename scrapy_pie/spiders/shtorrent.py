@@ -159,7 +159,7 @@ class ShtorrentSpider(scrapy.Spider):
             film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first().split("：")[1].strip()
             # 种子期限
             seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first().split("：")[1].strip()
-        except Exception as e:
+        except Exception or IndexError as e:
             film_name = response.xpath(
                 '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract_first().split("：")[
                 1].strip()
@@ -200,10 +200,15 @@ class ShtorrentSpider(scrapy.Spider):
         torrent_url = self.start_urls[0] + response.xpath('//*[@class="attnm"]/a/@href').extract_first()
         torrent_name = response.xpath('//*[@class="attnm"]/a/text()').extract_first()
         # code =  torrent_name.split("]")[1].split(".")[0][:-2]
-        start = torrent_name.index("]")
-        end = torrent_name.rindex(".")
+        if "[" in torrent_name and "]" in torrent_name:
+            # [7sht.me]MIDE-458-C.torrent
+            start = torrent_name.index("]")
+            end = torrent_name.rindex(".")
 
-        code = "-".join(torrent_name[start + 1:end].split("-")[:2])
+            code = "-".join(torrent_name[start + 1:end].split("-")[:2])
+        else:
+            # abp-566-C.torrent
+            code = torrent_name.split(".")[0][:-2]
 
         # 无聊的赋值
         shtorrentfilm["code_and_title"] = str(code_and_title)

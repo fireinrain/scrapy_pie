@@ -103,6 +103,27 @@ def test_error_film_name():
         print(link)
 
 
+def test_error_film_name2():
+    html_strs = ""
+    with open('./sampledata/sht/error_film2.html', 'r+', encoding='utf8') as file:
+        html_strs = file.read()
+        # print(html_strs)
+        sel = Selector(text=html_strs, type="html")
+        # '//*[@id="postmessage_271824"]/text()[1]'
+        # ‘//div[contains(@id,”test”) and contains(@id,”title”)]’
+        link = sel.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract()
+        film_name = ""
+        try:
+            film_name = sel.xpath('//*[@class="t_f"]/text()[1]').extract_first().split("：")[1].strip()
+        except Exception as e:
+            print("dddd")
+
+        kk = sel.xpath('//*[@class="t_f"]/text()[2]').extract_first()
+        # print(link)
+        # print(film_name)
+        print(kk)
+
+
 def test_extract_codes():
     a = "[168x.me]ABP-036.torrent"
     b = "[7sht.me]MIDE-458-C.torrent"
@@ -117,6 +138,11 @@ def test_extract_codes():
     print("-".join(b[start + 1:end1].split("-")[:2]))
 
 
+def test_get_code():
+    a = "abp-566-C.torrent"
+    print(a.split(".")[0][:-2])
+
+
 if __name__ == '__main__':
     # test_selector()
     # test_range()
@@ -125,4 +151,6 @@ if __name__ == '__main__':
     # test_code()
     # test_error_film_name()
     # test_db()
-    test_extract_codes()
+    # test_extract_codes()
+    # test_get_code()
+    test_error_film_name2()
