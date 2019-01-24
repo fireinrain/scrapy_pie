@@ -45,6 +45,8 @@ class ShtItemCountItem(scrapy.Item):
 
 
 class ShtorrentFilm(scrapy.Item):
+    # 链接
+    parse_url = scrapy.Field()
     # 番号 作品名
     code_and_title = scrapy.Field()
     # 番号

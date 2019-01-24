@@ -144,6 +144,8 @@ class ShtorrentSpider(scrapy.Spider):
         :return:
         """
         shtorrentfilm = ShtorrentFilm()
+        # 解析的url
+        parse_url = response.request.url
         # 标题和番号
         code_and_title = response.xpath('//*[@id="thread_subject"]/text()').extract_first()
         try:
@@ -159,7 +161,7 @@ class ShtorrentSpider(scrapy.Spider):
             film_code_flag = response.xpath('//*[@class="t_f"]/text()[5]').extract_first().split("：")[1].strip()
             # 种子期限
             seed_period = response.xpath('//*[@class="t_f"]/text()[6]').extract_first().split("：")[1].strip()
-        except Exception or IndexError as e:
+        except(Exception, IndexError):
             film_name = response.xpath(
                 '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract_first().split("：")[
                 1].strip()
@@ -171,18 +173,36 @@ class ShtorrentSpider(scrapy.Spider):
             film_format = response.xpath(
                 '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[5]').extract_first().split("：")[
                 1].strip()
-            # 影片大小
-            film_size = response.xpath(
-                '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[6]').extract_first().split("：")[
-                1].strip()
-            # 是否有码
-            film_code_flag = response.xpath(
-                '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[7]').extract_first().split("：")[
-                1].strip()
-            # 种子期限
-            seed_period = response.xpath(
-                '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[8]').extract_first().split("：")[
-                1].strip()
+            try:
+                # 影片大小
+                film_size = response.xpath(
+                    '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[6]').extract_first().split(
+                    "：")[
+                    1].strip()
+                # 是否有码
+                film_code_flag = response.xpath(
+                    '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[7]').extract_first().split(
+                    "：")[
+                    1].strip()
+                # 种子期限
+                seed_period = response.xpath(
+                    '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[8]').extract_first().split(
+                    "：")[
+                    1].strip()
+            except IndexError as e:
+                # 影片大小
+                film_size = response.xpath(
+                    '////td[contains(@class,"t_f") and contains(@id,"postmessage_")]/font/font/text()').extract_first().strip()+"GB"
+                # 是否有码
+                film_code_flag = response.xpath(
+                    '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[8]').extract_first().split(
+                    "：")[
+                    1].strip()
+                # 种子期限
+                seed_period = response.xpath(
+                    '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[9]').extract_first().split(
+                    "：")[
+                    1].strip()
         # 影片预览
         # film_preview = response.xpath('//*[@class="t_f"]/text()[7]').extract_first()
         # 影片介绍
@@ -211,6 +231,7 @@ class ShtorrentSpider(scrapy.Spider):
             code = torrent_name.split(".")[0][:-2]
 
         # 无聊的赋值
+        shtorrentfilm['parse_url'] = str(parse_url)
         shtorrentfilm["code_and_title"] = str(code_and_title)
         shtorrentfilm["film_name"] = str(film_name)
         shtorrentfilm["film_format"] = str(film_format)
@@ -227,6 +248,7 @@ class ShtorrentSpider(scrapy.Spider):
 
         # 返回给pipeline处理
         yield shtorrentfilm
+        print(parse_url)
         print(code_and_title)
         print(film_name)
         print(film_stars)

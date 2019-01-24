@@ -99,8 +99,11 @@ def test_error_film_name():
         sel = Selector(text=html_strs, type="html")
         # '//*[@id="postmessage_271824"]/text()[1]'
         # ‘//div[contains(@id,”test”) and contains(@id,”title”)]’
-        link = sel.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract()
-        print(link)
+        # link = sel.xpath('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[3]').extract()
+        # print(link)
+        film_code_flag = sel.xpath(
+            '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()').extract()
+        print(film_code_flag)
 
 
 def test_error_film_name2():
@@ -117,11 +120,30 @@ def test_error_film_name2():
             film_name = sel.xpath('//*[@class="t_f"]/text()[1]').extract_first().split("：")[1].strip()
         except Exception as e:
             print("dddd")
+        # //*[@id="postmessage_266574"]/text()[1]
+        kk = sel.xpath('//*[@class="t_f"]/text()[1]').extract_first()
 
-        kk = sel.xpath('//*[@class="t_f"]/text()[2]').extract_first()
-        # print(link)
+        # //*[@id="postmessage_266574"]/text()[6]
+        film_code_flag = sel.xpath(
+            '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()').extract()
+
+        size = sel.xpath(('//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/font/font/text()')).extract()
+        film_size = sel.xpath(
+            '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[9]').extract_first().split(
+            "：")[
+            1].strip()
+        # //*[@id="postmessage_266574"]/text()[6]
+        # film_code_flag = sel.xpath(
+        #     '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[7]').extract_first().split(
+        #     "：")[
+        #     1].strip()
+        print(link)
         # print(film_name)
         print(kk)
+        print(film_code_flag)
+        print(size)
+        print(film_size)
+        # print(film_code_flag)
 
 
 def test_extract_codes():
@@ -149,7 +171,7 @@ if __name__ == '__main__':
     # test_encode()
     # test_config()
     # test_code()
-    # test_error_film_name()
+    test_error_film_name()
     # test_db()
     # test_extract_codes()
     # test_get_code()

@@ -131,26 +131,27 @@ class ShtorrentPipelineSync(object):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
                          "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
-                         "'%s','%s','%s','%s','%s','%s')" % (
+                         "'%s','%s','%s','%s','%s','%s','%s')" % (
                              item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
                              item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
                              item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
                              item['torrent_url'],
-                             item['torrent_name'])
+                             item['torrent_name'], item['parse_url'])
 
             update_sql = "UPDATE `sht_films` SET `codes`='%s'," \
                          "`code_and_title`='%s',`film_name`='%s',`film_stars`='%s'," \
                          "`film_format`='%s',`film_size`='%s',`film_code_flag`='%s'," \
                          "`seed_period`='%s',`film_preview_url`='%s',`film_preview_url2`='%s'," \
-                         "`magnent_str`='%s',`torrent_url`='%s',`torrent_name`='%s' WHERE `codes`='%s'" % (
+                         "`magnent_str`='%s',`torrent_url`='%s',`torrent_name`='%s',`parse_url`='%s' WHERE `code_and_title`='%s'" % (
                              item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
                              item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
                              item['film_preview_url'], item['film_preview_url2'], item['magnent_str'],
                              item['torrent_url'],
-                             item['torrent_name'], item['codes'])
+                             item['torrent_name'], item['parse_url'], item['code_and_title'])
 
-            select_sql = "select * from `sht_films` where `codes`='%s'" % item['codes']
+            select_sql = "select * from `sht_films` where `code_and_title`='%s'" % item['code_and_title']
             # 存入数据库
+            # https://sehuatang.org/thread-26748-1-25.html 数据有重复 IPX-150
             self.cursor.execute(select_sql)
             ret = self.cursor.fetchone()
             if ret:
