@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import pymysql as MySQLdb
+import scrapy
 from twisted.enterprise import adbapi
 
 # Define your item pipelines here
@@ -8,7 +9,7 @@ from twisted.enterprise import adbapi
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
-from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilm
+from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
 from scrapy_pie.utils import to_mysql_daatetime
 
 
@@ -101,6 +102,18 @@ class ShtorrentPipelineSync(object):
     def __init__(self, dbpool):
         self.db = dbpool
         self.cursor = self.db.cursor()
+        # self.crawler = crawler
+        # 查询出已入库的作品的url
+        select_url = "select parse_url from sht_films"
+        self.cursor.execute(select_url)
+        result = self.cursor.fetchall()
+        self.url_dict = set([i["parse_url"] for i in result])
+        # print(len(self.url_dict))
+        print(f">>>>>>>>数据库中已有:{len(result)}条URL")
+
+    # @classmethod
+    # def from_crawler(cls, crawler):
+    #     return cls(crawler)
 
     @classmethod
     def from_settings(cls, settings):
@@ -114,7 +127,6 @@ class ShtorrentPipelineSync(object):
             use_unicode=True,
         )
         dbpool = MySQLdb.connect(**dbparams)
-
         return cls(dbpool)
 
     def process_item(self, item, spider):
@@ -131,7 +143,19 @@ class ShtorrentPipelineSync(object):
                 spider.need_scrapy = False
                 spider.close(spider, "数据库为最新无需更新")
             # print(item)
-        elif isinstance(item, ShtorrentFilm):
+        elif isinstance(item, ShtPageFilmListItem):
+            # 处理每页的链接
+            for item_url in item["url_list"]:
+                if item_url in self.url_dict:
+                    continue
+                else:
+                    print(f">>>>>>>>正在添加：{item_url} 页面资源")
+                    # req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
+                    #                      dont_filter=True, meta={'item': item})
+                    # self.crawler.engine.crawl(req, spider)
+
+                    # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, dont_filter=True)
+        elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
                          "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \

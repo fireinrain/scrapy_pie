@@ -5,7 +5,7 @@ import scrapy
 # 该网页的中文字幕种子下载，并将相关数据保存到数据库中
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
-from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilm
+from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -114,10 +114,16 @@ class ShtorrentSpider(scrapy.Spider):
         # print(f"title: {item_url}")
         # print(f"数量：{len(item_url)}")
         # print(f"name: {item_name}")
+        page_url_list = ShtPageFilmListItem()
+        page_url_list["url_list"] = per_item_urls
+        yield page_url_list
 
+
+
+        # TODO 只爬取更新了的作品页面
         # 对每一页的film url请求
-        for url in per_item_urls:
-            yield scrapy.Request(url, callback=self.parse_file_page, headers=self.header, dont_filter=True)
+        # for url in per_item_urls:
+        #     yield scrapy.Request(url, callback=self.parse_file_page, headers=self.header, dont_filter=True)
 
     def parse_file_page(self, response):
         """
@@ -144,7 +150,7 @@ class ShtorrentSpider(scrapy.Spider):
         :param response:
         :return:
         """
-        shtorrentfilm = ShtorrentFilm()
+        shtorrentfilm = ShtorrentFilmItem()
         # 解析的url
         parse_url = response.request.url
         # 标题和番号
