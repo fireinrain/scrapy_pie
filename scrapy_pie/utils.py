@@ -10,6 +10,7 @@
 @license: (C) Copyright 2015-2018, Node Supply Chain Manager Corporation Limited.
 """
 import datetime
+import math
 
 
 def to_mysql_daatetime():
@@ -64,9 +65,32 @@ def table_formate_print(item, head_template=None, end_template=None):
     print("-" * int(max_str * 1.62))
     for i in item.fields:
         strs = f"{table_head_template} {i}:  {item[str(i)]}"
+        chinese_chars = [i for char in strs if is_chinese(char)]
         size = len(strs)
-        print(strs, (int(max_str * 1.62) - (size + 3)) * " ", table_end_template)
+        not_zh_size = size - len(chinese_chars)
+        # 中文字符的长度用len()算也是一个字符，所以不好计较
+        # 计算的时候会有误差，这里只是算一个中文字符的宽度大概是多少个
+        # ascii的几倍，不够完美
+        chinese_chars_len = len(chinese_chars) * math.ceil(11 / 6) - 1
+        not_zh_size = not_zh_size + chinese_chars_len
+        if not chinese_chars:
+            print(strs, (int(max_str * 1.62) - (not_zh_size + 3)) * " ", table_end_template)
+            # print(f"**{chinese_chars}")
+        else:
+            chinese_chars_length = len(chinese_chars)
+            # 长度参数补偿
+            multi = int((11/chinese_chars_length)*0.688)
+            print(strs, (int(max_str * 1.62) - not_zh_size - 1*multi) * " ", table_end_template)
+
         print("-" * int(max_str * 1.62))
+
+
+def is_chinese(uchar):
+    """判断一个unicode是否是汉字"""
+    for c in uchar:
+        if not ('\u4e00' <= c <= '\u9fa5'):
+            return False
+    return True
 
 
 if __name__ == '__main__':

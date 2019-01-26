@@ -9,11 +9,13 @@
 @contact: lzycoder.vip@gmail.com
 @license: (C) Copyright 2015-2018, Node Supply Chain Manager Corporation Limited.
 """
+import math
+
 import pymysql
 from scrapy import Selector
 
 from scrapy_pie.items import ShtorrentFilmItem
-from scrapy_pie.utils import table_formate_print
+from scrapy_pie.utils import table_formate_print, is_chinese
 
 
 def test_selector():
@@ -174,7 +176,7 @@ def test_table_formate_print():
     shtorrentfilmitem["parse_url"] = "www.baidu.com"
     shtorrentfilmitem["film_code_flag"] = "有码"
     shtorrentfilmitem["film_size"] = "5GB"
-    shtorrentfilmitem["film_name"] = "经典武侠大戏陆小凤传奇"
+    shtorrentfilmitem["film_name"] = "经典武侠大戏陆小凤传奇经典武侠大戏陆小凤传奇"
     shtorrentfilmitem["torrent_name"] = "xxx.torrent"
     shtorrentfilmitem["film_stars"] = "贾静雯"
     shtorrentfilmitem["torrent_url"] = "abc.torrent"
@@ -196,9 +198,23 @@ def test_table_formate_print():
     print("-" * int(max_str * 1.62))
     for i in shtorrentfilmitem.fields:
         strs = f"{header_template} {i}:  {shtorrentfilmitem[str(i)]}"
+        chinese_chars = [i for char in strs if is_chinese(char)]
         size = len(strs)
-        print(strs, (int(max_str * 1.62)-(size+3+9))*" ","|")
+        not_zh_size = size - len(chinese_chars)
+        chinese_chars_len = len(chinese_chars) * math.ceil(11 / 6)
+        not_zh_size = not_zh_size + chinese_chars_len
+
+        if not chinese_chars:
+            print(strs, (int(max_str * 1.62) - (not_zh_size + 3)) * " ", "|")
+            print(f"**{chinese_chars}")
+        else:
+            print(strs, (int(max_str * 1.62) - not_zh_size+1) * " ", "|")
+
         print("-" * int(max_str * 1.62))
+    print(len("经典武侠大戏陆小凤传奇"))
+    print("经级级")
+    print("-" * 6)
+    print(math.ceil(11 / 6))
 
     table_formate_print(shtorrentfilmitem, head_template="*",end_template=None)
 
