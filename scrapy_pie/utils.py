@@ -31,5 +31,28 @@ def cut_item_url_for_unique(url):
     return url[:index]
 
 
+def format_print(message):
+    """
+    格式化打印消息
+    :param message:
+    :return:
+    """
+    size = len(str(message))
+    print("-" * int(size*3.5))
+    print(f">>>>>>>>{message}")
+    print("-"*int(size*3.5))
+
+
+def table_formate_print(item):
+    """
+    按照表格打印对象中的属性和值
+    :param item:
+    :return:
+    """
+    pass
+
+
 if __name__ == '__main__':
     print(to_mysql_daatetime())
+    test_str = "Your spider is running now!"
+    format_print(f"{test_str}")
