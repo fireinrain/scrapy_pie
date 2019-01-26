@@ -10,7 +10,7 @@ from twisted.enterprise import adbapi
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
 from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
-from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique
+from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique, format_print
 
 
 class ScrapyPiePipeline(object):
@@ -111,7 +111,7 @@ class ShtorrentPipelineSync(object):
         # print(len(self.url_dict))
         self.crawler.url_list = self.url_dict
 
-        print(f">>>>>>>>数据库中已有:{len(result)}条URL")
+        format_print(f"数据库中已有:{len(result)}条URL")
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -145,7 +145,8 @@ class ShtorrentPipelineSync(object):
 
     def process_item(self, item, spider):
         if isinstance(item, ShtCategoryItem):
-            print(item)
+            pass
+            # format_print(item)
         elif isinstance(item, ShtItemCountItem):
             select_sql = "select count(*) total_item from `sht_films`"
             self.cursor.execute(select_sql)
@@ -153,7 +154,7 @@ class ShtorrentPipelineSync(object):
             # print(result)  {'total_item': 727}
             # 做判断是否要更新
             if item["total"] == int(result['total_item']):
-                spider.logger.warn("无需更新,停止爬虫")
+                format_print("无需更新,停止爬虫")
                 spider.need_scrapy = False
                 spider.close(spider, "数据库为最新无需更新")
             # print(item)
@@ -163,7 +164,7 @@ class ShtorrentPipelineSync(object):
                 if cut_item_url_for_unique(item_url) in self.url_dict:
                     continue
                 else:
-                    print(f">>>>>>>>正在添加：{item_url} 页面资源")
+                    format_print(f"正在添加：{item_url} 页面资源")
                     req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
                                          dont_filter=True)
                     self.crawler.engine.crawl(req, spider)
@@ -172,7 +173,7 @@ class ShtorrentPipelineSync(object):
         elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
-                         "`magnent_str`,`torrent_url`,`torrent_name`) value('%s','%s','%s','%s','%s','%s','%s'," \
+                         "`magnent_str`,`torrent_url`,`torrent_name`,`parse_url`) value('%s','%s','%s','%s','%s','%s','%s'," \
                          "'%s','%s','%s','%s','%s','%s','%s')" % (
                              item['codes'], item['code_and_title'], item['film_name'], item['film_stars'],
                              item['film_format'], item['film_size'], item['film_code_flag'], item['seed_period'],
@@ -195,16 +196,13 @@ class ShtorrentPipelineSync(object):
             # 存入数据库
             # https://sehuatang.org/thread-26748-1-25.html 数据有重复 IPX-150
             self.cursor.execute(select_sql)
-            print("-------db-------")
-            print(f"{item}")
-            print("----------------end")
-            # ret = self.cursor.fetchone()
-            # if ret:
-            #     self.cursor.execute(update_sql)
-            #     self.db.commit()
-            # else:
-            #     self.cursor.execute(insert_sql)
-            #     self.db.commit()
+            ret = self.cursor.fetchone()
+            if ret:
+                self.cursor.execute(update_sql)
+                self.db.commit()
+            else:
+                self.cursor.execute(insert_sql)
+                self.db.commit()
 
         else:
             pass

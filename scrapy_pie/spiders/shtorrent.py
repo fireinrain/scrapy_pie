@@ -6,6 +6,7 @@ import scrapy
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
 from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
+from scrapy_pie.utils import format_print
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -62,7 +63,7 @@ class ShtorrentSpider(scrapy.Spider):
         :param response:
         :return:
         """
-        print(f"进入解析{response}")
+        # print(f"进入解析{response}")
         # 解析有多少部 决定要不要更新数据库
         '//*[@id="thread_types"]/li[2]/a'
         '//*[@id="thread_types"]/li[3]/a'
@@ -87,10 +88,10 @@ class ShtorrentSpider(scrapy.Spider):
         page_num_max = max([int(i.split("-")[2].split(".")[0]) for i in page_list])
         page_list_url = [self.start_urls[0] + page_prefix + "-" + str(i) + ".html" for i in range(1, page_num_max + 1)]
         if not self.need_scrapy:
-            print("哈哈哈哈哈，不需要爬去数据了")
+            format_print("哈哈哈哈哈，不需要爬去数据了")
         else:
-            print("有数据更新！！！，正在进行爬取")
-            print(page_list_url)
+            format_print("有数据更新！！！，正在进行爬取")
+            format_print(page_list_url)
             for page in page_list_url:
                 # dont_filter=True 不要过滤重复的请求
                 yield scrapy.Request(page, callback=self.parse_item_film, headers=self.header, dont_filter=True)
