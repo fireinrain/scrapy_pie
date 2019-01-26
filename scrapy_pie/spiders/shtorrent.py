@@ -6,7 +6,7 @@ import scrapy
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
 from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
-from scrapy_pie.utils import format_print
+from scrapy_pie.utils import format_print, table_formate_print
 
 
 class ShtorrentSpider(scrapy.Spider):
@@ -254,18 +254,4 @@ class ShtorrentSpider(scrapy.Spider):
 
         # 返回给pipeline处理
         yield shtorrentfilm
-        print(parse_url)
-        print(code_and_title)
-        print(film_name)
-        print(film_stars)
-        print(film_format)
-        print(film_size)
-        print(film_code_flag)
-        print(seed_period)
-        print(film_preview_url)
-        print(film_preview_url2)
-        print(magnent_str)
-        print(torrent_url)
-        print(torrent_name)
-        print(code)
-        print("-------------------------------------------------------------------------")
+        table_formate_print(shtorrentfilm, head_template="|", end_template=None)

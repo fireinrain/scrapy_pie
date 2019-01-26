@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pymysql as MySQLdb
 import scrapy
+from scrapy.exceptions import DropItem
 from twisted.enterprise import adbapi
 
 # Define your item pipelines here
@@ -168,8 +169,9 @@ class ShtorrentPipelineSync(object):
                     req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
                                          dont_filter=True)
                     self.crawler.engine.crawl(req, spider)
-
                     # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, meta={'item': item},dont_filter=True)
+            # 不处理这个item了
+            raise DropItem()
         elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \

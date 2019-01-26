@@ -38,18 +38,35 @@ def format_print(message):
     :return:
     """
     size = len(str(message))
-    print("-" * int(size*3.5))
+    print("-" * int(size * 3.5))
     print(f">>>>>>>>{message}")
-    print("-"*int(size*3.5))
+    print("-" * int(size * 3.5))
 
 
-def table_formate_print(item):
+def table_formate_print(item, head_template=None, end_template=None):
     """
     按照表格打印对象中的属性和值
     :param item:
+    :param table_head_template:
     :return:
     """
-    pass
+    if head_template is None:
+        table_head_template = "|" * 8
+    else:
+        table_head_template = head_template * 8
+    if end_template is None:
+        table_end_template = "|"
+    else:
+        table_end_template = end_template
+
+    max_str = max([len(str(item[str(i)])) for i in item.fields])
+    print(max_str)
+    print("-" * int(max_str * 1.62))
+    for i in item.fields:
+        strs = f"{table_head_template} {i}:  {item[str(i)]}"
+        size = len(strs)
+        print(strs, (int(max_str * 1.62) - (size + 3)) * " ", table_end_template)
+        print("-" * int(max_str * 1.62))
 
 
 if __name__ == '__main__':

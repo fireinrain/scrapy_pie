@@ -12,6 +12,9 @@
 import pymysql
 from scrapy import Selector
 
+from scrapy_pie.items import ShtorrentFilmItem
+from scrapy_pie.utils import table_formate_print
+
 
 def test_selector():
     html_strs = ""
@@ -165,14 +168,50 @@ def test_get_code():
     print(a.split(".")[0][:-2])
 
 
+def test_table_formate_print():
+    shtorrentfilmitem = ShtorrentFilmItem()
+
+    shtorrentfilmitem["parse_url"] = "www.baidu.com"
+    shtorrentfilmitem["film_code_flag"] = "有码"
+    shtorrentfilmitem["film_size"] = "5GB"
+    shtorrentfilmitem["film_name"] = "经典武侠大戏陆小凤传奇"
+    shtorrentfilmitem["torrent_name"] = "xxx.torrent"
+    shtorrentfilmitem["film_stars"] = "贾静雯"
+    shtorrentfilmitem["torrent_url"] = "abc.torrent"
+    shtorrentfilmitem["magnent_str"] = "madsds:xxxxxxxsdsdassdsdsasdsadasfasdasdsasdasda"
+    shtorrentfilmitem["film_preview_url"] = "http://sdsasdasd.sdasdasdas..dasdasdsadsasdsa.d.as.dasdasdasdas"
+    shtorrentfilmitem["film_preview_url2"] = "http://sdswrerfdsfdsfdfsd.vom/a.jpg"
+    shtorrentfilmitem["seed_period"] = "200"
+    shtorrentfilmitem["film_format"] = "mp4"
+    shtorrentfilmitem["code_and_title"] = "abc-123 经典武侠大戏陆小凤传奇"
+    shtorrentfilmitem["codes"] = "abc-123"
+    for i in shtorrentfilmitem.fields:
+        print(shtorrentfilmitem[str(i)])
+    print(shtorrentfilmitem)
+    print(1 / 0.618)
+    print("---------------------------------------------------------")
+    max_str = max([len(str(shtorrentfilmitem[str(i)])) for i in shtorrentfilmitem.fields])
+    print(max_str)
+    header_template = "||||||||"
+    print("-" * int(max_str * 1.62))
+    for i in shtorrentfilmitem.fields:
+        strs = f"{header_template} {i}:  {shtorrentfilmitem[str(i)]}"
+        size = len(strs)
+        print(strs, (int(max_str * 1.62)-(size+3+9))*" ","|")
+        print("-" * int(max_str * 1.62))
+
+    table_formate_print(shtorrentfilmitem, head_template="*",end_template=None)
+
+
 if __name__ == '__main__':
     # test_selector()
     # test_range()
     # test_encode()
     # test_config()
     # test_code()
-    test_error_film_name()
+    # test_error_film_name()
     # test_db()
     # test_extract_codes()
     # test_get_code()
-    test_error_film_name2()
+    # test_error_film_name2()
+    test_table_formate_print()
