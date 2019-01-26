@@ -5,7 +5,8 @@ import scrapy
 # 该网页的中文字幕种子下载，并将相关数据保存到数据库中
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
-from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
+from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem, \
+    ShtFilmFileResourceItem
 from scrapy_pie.utils import format_print, table_formate_print
 
 
@@ -15,7 +16,7 @@ class ShtorrentSpider(scrapy.Spider):
     # 有时你填写http也可以返回正确的response
     # 但是最好写成和浏览器访问的一支
     # 要不然会报错：https://github.com/scrapy/scrapy/issues/3103
-    start_urls = ['https://sehuatang.org/']
+    start_urls = ['https://www.sehuatang.org/', ]
 
     # 是否需要爬去
     need_scrapy = True
@@ -257,3 +258,11 @@ class ShtorrentSpider(scrapy.Spider):
         table_formate_print(shtorrentfilm, head_template="|", end_template=None)
 
         # 相关文件下载
+        sht_film_file_resource_item = ShtFilmFileResourceItem()
+        sht_film_file_resource_item["code_and_title"] = str(code_and_title)
+        sht_film_file_resource_item["film_preview_url"] = [str(film_preview_url), str(film_preview_url2)]
+        # sht_film_file_resource_item["film_preview_url2"] = str(film_preview_url2)
+        sht_film_file_resource_item["torrent_url"] = str(torrent_url)
+        sht_film_file_resource_item["torrent_name"] = str(torrent_name)
+        sht_film_file_resource_item['parse_url'] = str(parse_url)
+        yield sht_film_file_resource_item

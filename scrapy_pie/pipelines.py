@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import pymysql as MySQLdb
 import scrapy
+from scrapy import Request
 from scrapy.exceptions import DropItem
 from twisted.enterprise import adbapi
+from scrapy.pipelines.files import FilesPipeline
+from scrapy.pipelines.images import ImagesPipeline
 
 # Define your item pipelines here
 #
@@ -10,8 +13,9 @@ from twisted.enterprise import adbapi
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
-from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
-from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique, format_print
+from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem, \
+    ShtFilmFileResourceItem
+from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique, format_print, get_sht_img_header
 
 
 class ScrapyPiePipeline(object):
@@ -212,4 +216,62 @@ class ShtorrentDataSyncStorePipeline(object):
 
     def close_spider(self, spider):
         # self.db.commit()
+        self.cursor.close()
         self.db.close()
+
+
+# sht 图片下载的pipeline
+class ShtorrentImageDownloadPipeline(ImagesPipeline):
+    # def __init__(self, dbpool, store_path):
+    #     self.store_path = store_path
+    #     self.db = dbpool
+    #     self.cursor = self.db.cursor()
+    #
+    # @classmethod
+    # def from_settings(cls, settings):
+    #     dbparams = dict(
+    #         host=settings['MYSQL_HOST'],
+    #         db=settings['MYSQL_DBNAME']["scrapy_pie"],
+    #         user=settings['MYSQL_USER'],
+    #         passwd=settings['MYSQL_PASS'],
+    #         charset='utf8',
+    #         cursorclass=MySQLdb.cursors.DictCursor,
+    #         use_unicode=True,
+    #     )
+    #     dbpool = MySQLdb.connect(**dbparams)
+    #     store_path = settings["FILES_STORE"]
+    #     return cls(dbpool, store_path)
+
+    def get_media_requests(self, item, info):
+        # 从item中获取要下载图片的url，根据url构造Request()对象，并返回该对象
+        if isinstance(item, ShtFilmFileResourceItem):
+            image_urls = item['film_preview_url']
+            for index, img_url in enumerate(image_urls):
+                # 把序号传过去
+                print(f"*****{img_url}")
+                yield Request(img_url, meta={'item': item, 'index': index}, headers=get_sht_img_header())
+
+    def file_path(self, request, response=None, info=None):
+        # 用来自定义图片的下载路径
+        item = request.meta['item']
+        index = request.meta['index']
+        return '%s.jpg' % str(index)
+
+    def item_completed(self, results, item, info):
+        # 图片下载完成后，返回的结果results
+        if isinstance(item, ShtFilmFileResourceItem):
+            print(results)
+        return item
+
+
+# sht torrent 下载的pipeline
+class ShtorrentTorrentDownloadPipeline(FilesPipeline):
+    # def get_media_requests(self, item, info):
+    #     return super().get_media_requests(item, info)
+    #
+    # def item_completed(self, results, item, info):
+    #     return super().item_completed(results, item, info)
+    #
+    # def file_path(self, request, response=None, info=None):
+    #     return super().file_path(request, response, info)
+    pass

@@ -81,3 +81,19 @@ class ShtorrentFilmItem(scrapy.Item):
 class ShtPageFilmListItem(scrapy.Item):
     # 首页单个页面的作品链接集合
     url_list = scrapy.Field()
+
+
+# 单个作品相关文件下载
+class ShtFilmFileResourceItem(scrapy.Item):
+    # 番号 作品名(作为文件夹)
+    code_and_title = scrapy.Field()
+    # 封面链接
+    film_preview_url = scrapy.Field()
+    #  short view
+    # film_preview_url2 = scrapy.Field()
+    # 种子链接
+    torrent_url = scrapy.Field()
+    # 种子名称
+    torrent_name = scrapy.Field()
+    # 抓取的页面，用于下载torrent 构造header
+    parse_url = scrapy.Field()
