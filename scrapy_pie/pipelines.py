@@ -99,7 +99,7 @@ class ScrapiesPipelineSync(object):
 ################################################
 
 # shtorrent 同步入库
-class ShtorrentPipelineSync(object):
+class ShtorrentDataSyncStorePipeline(object):
     def __init__(self, dbpool, crawler):
         self.db = dbpool
         self.cursor = self.db.cursor()

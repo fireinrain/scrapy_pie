@@ -71,7 +71,7 @@ ITEM_PIPELINES = {
     # javbus
     'scrapy_pie.pipelines.ScrapiesPipelineSync': 2,
     # shtorrent
-    'scrapy_pie.pipelines.ShtorrentPipelineSync': 3,
+    'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 3,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

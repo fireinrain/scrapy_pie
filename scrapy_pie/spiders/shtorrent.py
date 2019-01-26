@@ -255,3 +255,5 @@ class ShtorrentSpider(scrapy.Spider):
         # 返回给pipeline处理
         yield shtorrentfilm
         table_formate_print(shtorrentfilm, head_template="|", end_template=None)
+
+        # 相关文件下载
