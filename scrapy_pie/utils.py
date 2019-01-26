@@ -20,5 +20,16 @@ def to_mysql_daatetime():
     return str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
+def cut_item_url_for_unique(url):
+    """
+    将 'http://www.54sadsad.com/thread-54251-1-7.html'
+    截取为 ‘http://www.54sadsad.com/thread-54251-1'
+    :param url:
+    :return:
+    """
+    index = url.rindex("-")
+    return url[:index]
+
+
 if __name__ == '__main__':
     print(to_mysql_daatetime())

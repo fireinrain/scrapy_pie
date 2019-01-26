@@ -10,7 +10,7 @@ from twisted.enterprise import adbapi
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
 from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem
-from scrapy_pie.utils import to_mysql_daatetime
+from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique
 
 
 class ScrapyPiePipeline(object):
@@ -99,35 +99,49 @@ class ScrapiesPipelineSync(object):
 
 # shtorrent 同步入库
 class ShtorrentPipelineSync(object):
-    def __init__(self, dbpool):
+    def __init__(self, dbpool, crawler):
         self.db = dbpool
         self.cursor = self.db.cursor()
-        # self.crawler = crawler
+        self.crawler = crawler
         # 查询出已入库的作品的url
         select_url = "select parse_url from sht_films"
         self.cursor.execute(select_url)
         result = self.cursor.fetchall()
-        self.url_dict = set([i["parse_url"] for i in result])
+        self.url_dict = set([cut_item_url_for_unique(i["parse_url"]) for i in result])
         # print(len(self.url_dict))
+        self.crawler.url_list = self.url_dict
+
         print(f">>>>>>>>数据库中已有:{len(result)}条URL")
 
-    # @classmethod
-    # def from_crawler(cls, crawler):
-    #     return cls(crawler)
-
     @classmethod
-    def from_settings(cls, settings):
+    def from_crawler(cls, crawler):
         dbparams = dict(
-            host=settings['MYSQL_HOST'],
-            db=settings['MYSQL_DBNAME']["scrapy_pie"],
-            user=settings['MYSQL_USER'],
-            passwd=settings['MYSQL_PASS'],
+            host=crawler.settings['MYSQL_HOST'],
+            db=crawler.settings['MYSQL_DBNAME']["scrapy_pie"],
+            user=crawler.settings['MYSQL_USER'],
+            passwd=crawler.settings['MYSQL_PASS'],
             charset='utf8',
             cursorclass=MySQLdb.cursors.DictCursor,
             use_unicode=True,
         )
         dbpool = MySQLdb.connect(**dbparams)
-        return cls(dbpool)
+        return cls(dbpool, crawler)
+        # return cls(crawler)
+
+    @classmethod
+    def from_settings(cls, settings):
+        # dbparams = dict(
+        #     host=settings['MYSQL_HOST'],
+        #     db=settings['MYSQL_DBNAME']["scrapy_pie"],
+        #     user=settings['MYSQL_USER'],
+        #     passwd=settings['MYSQL_PASS'],
+        #     charset='utf8',
+        #     cursorclass=MySQLdb.cursors.DictCursor,
+        #     use_unicode=True,
+        # )
+        # dbpool = MySQLdb.connect(**dbparams)
+        # return cls(dbpool)
+        pass
 
     def process_item(self, item, spider):
         if isinstance(item, ShtCategoryItem):
@@ -146,15 +160,15 @@ class ShtorrentPipelineSync(object):
         elif isinstance(item, ShtPageFilmListItem):
             # 处理每页的链接
             for item_url in item["url_list"]:
-                if item_url in self.url_dict:
+                if cut_item_url_for_unique(item_url) in self.url_dict:
                     continue
                 else:
                     print(f">>>>>>>>正在添加：{item_url} 页面资源")
-                    # req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
-                    #                      dont_filter=True, meta={'item': item})
-                    # self.crawler.engine.crawl(req, spider)
+                    req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
+                                         dont_filter=True)
+                    self.crawler.engine.crawl(req, spider)
 
-                    # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, dont_filter=True)
+                    # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, meta={'item': item},dont_filter=True)
         elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
@@ -181,13 +195,16 @@ class ShtorrentPipelineSync(object):
             # 存入数据库
             # https://sehuatang.org/thread-26748-1-25.html 数据有重复 IPX-150
             self.cursor.execute(select_sql)
-            ret = self.cursor.fetchone()
-            if ret:
-                self.cursor.execute(update_sql)
-                self.db.commit()
-            else:
-                self.cursor.execute(insert_sql)
-                self.db.commit()
+            print("-------db-------")
+            print(f"{item}")
+            print("----------------end")
+            # ret = self.cursor.fetchone()
+            # if ret:
+            #     self.cursor.execute(update_sql)
+            #     self.db.commit()
+            # else:
+            #     self.cursor.execute(insert_sql)
+            #     self.db.commit()
 
         else:
             pass

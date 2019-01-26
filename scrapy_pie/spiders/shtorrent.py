@@ -118,8 +118,6 @@ class ShtorrentSpider(scrapy.Spider):
         page_url_list["url_list"] = per_item_urls
         yield page_url_list
 
-
-
         # TODO 只爬取更新了的作品页面
         # 对每一页的film url请求
         # for url in per_item_urls:
@@ -199,7 +197,7 @@ class ShtorrentSpider(scrapy.Spider):
             except IndexError as e:
                 # 影片大小
                 film_size = response.xpath(
-                    '////td[contains(@class,"t_f") and contains(@id,"postmessage_")]/font/font/text()').extract_first().strip()+"GB"
+                    '////td[contains(@class,"t_f") and contains(@id,"postmessage_")]/font/font/text()').extract_first().strip() + "GB"
                 # 是否有码
                 film_code_flag = response.xpath(
                     '//td[contains(@class,"t_f") and contains(@id,"postmessage_")]/text()[8]').extract_first().split(
