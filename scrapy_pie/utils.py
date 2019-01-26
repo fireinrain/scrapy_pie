@@ -11,6 +11,42 @@
 """
 import datetime
 import math
+from random import choice
+
+UserAgent = [
+    'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)',
+    'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.2)',
+    'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)',
+    'Mozilla/5.0 (Windows; U; Windows NT 5.2) Gecko/2008070208 Firefox/3.0.1',
+    'Mozilla/5.0 (Windows; U; Windows NT 5.1) Gecko/20070803 Firefox/1.5.0.12',
+    'Mozilla/5.0 (Macintosh; PPC Mac OS X; U; en) Opera 8.0',
+    'Opera/8.0 (Macintosh; PPC Mac OS X; U; en)',
+    'Opera/9.27 (Windows NT 5.2; U; zh-cn)',
+    'Mozilla/5.0 (Windows; U; Windows NT 5.2) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13',
+    'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.12) Gecko/20080219 Firefox/2.0.0.12 Navigator/9.0.0.6',
+    'Mozilla/5.0 (iPhone; U; CPU like Mac OS X) AppleWebKit/420.1 (KHTML, like Gecko) Version/3.0 Mobile/4A93 Safari/419.3',
+    'Mozilla/5.0 (Windows; U; Windows NT 5.2) AppleWebKit/525.13 (KHTML, like Gecko) Version/3.1 Safari/525.13'
+]
+
+# 主站访问headers
+sht_headers = {
+    'Host': 'www.54sadsad.com',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': choice(UserAgent),
+    'Accept-Encoding': 'gzip, deflate, sdch',
+    'Accept-Language': 'zh-CN,zh;q=0.8'}
+
+# 样品图下载headers
+sht_img_headers = {
+    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'accept-encoding': 'gzip, deflate, br',
+    'accept-language': 'en,zh;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,ja;q=0.6',
+    'cache-control': 'no-cache',
+    'pragma': 'no-cache',
+    'upgrade-insecure-requests': '1',
+    'user-agent': choice(UserAgent)
+}
 
 
 def to_mysql_daatetime():
@@ -79,8 +115,8 @@ def table_formate_print(item, head_template=None, end_template=None):
         else:
             chinese_chars_length = len(chinese_chars)
             # 长度参数补偿
-            multi = int((11/chinese_chars_length)*0.688)
-            print(strs, (int(max_str * 1.62) - not_zh_size - 1*multi) * " ", table_end_template)
+            multi = int((11 / chinese_chars_length) * 0.688)
+            print(strs, (int(max_str * 1.62) - not_zh_size - 1 * multi) * " ", table_end_template)
 
         print("-" * int(max_str * 1.62))
 
@@ -91,6 +127,14 @@ def is_chinese(uchar):
         if not ('\u4e00' <= c <= '\u9fa5'):
             return False
     return True
+
+
+def get_sht_img_header():
+    """
+    获取sht img header
+    :return:
+    """
+    return sht_img_headers
 
 
 if __name__ == '__main__':
