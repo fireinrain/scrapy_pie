@@ -47,6 +47,16 @@ sht_img_headers = {
     'upgrade-insecure-requests': '1',
     'user-agent': choice(UserAgent)
 }
+sht_torrent_headers = {
+    # 这里下载torrent不需要这个host字段
+    # 'Host': 'www.54sadsad.com',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': choice(UserAgent),
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    # 'Referer': item_url,
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'en,zh;q=0.9,zh-TW;q=0.8,zh-CN;q=0.7,ja;q=0.6'
+}
 
 
 def to_mysql_daatetime():
@@ -97,8 +107,8 @@ def table_formate_print(item, head_template=None, end_template=None):
         table_end_template = end_template
 
     max_str = max([len(str(item[str(i)])) for i in item.fields])
-    print(max_str)
-    print("-" * int(max_str * 1.62))
+    # print(max_str)
+    print("-" * int(max_str * 1.35))
     for i in item.fields:
         strs = f"{table_head_template} {i}:  {item[str(i)]}"
         chinese_chars = [i for char in strs if is_chinese(char)]
@@ -110,15 +120,15 @@ def table_formate_print(item, head_template=None, end_template=None):
         chinese_chars_len = len(chinese_chars) * math.ceil(11 / 6) - 1
         not_zh_size = not_zh_size + chinese_chars_len
         if not chinese_chars:
-            print(strs, (int(max_str * 1.62) - (not_zh_size + 3)) * " ", table_end_template)
+            print(strs, (int(max_str * 1.35) - (not_zh_size + 3)) * " ", table_end_template)
             # print(f"**{chinese_chars}")
         else:
             chinese_chars_length = len(chinese_chars)
             # 长度参数补偿
             multi = int((11 / chinese_chars_length) * 0.688)
-            print(strs, (int(max_str * 1.62) - not_zh_size - 1 * multi) * " ", table_end_template)
+            print(strs, (int(max_str * 1.35) - not_zh_size - 1 * multi) * " ", table_end_template)
 
-        print("-" * int(max_str * 1.62))
+        print("-" * int(max_str * 1.35))
 
 
 def is_chinese(uchar):
@@ -135,6 +145,12 @@ def get_sht_img_header():
     :return:
     """
     return sht_img_headers
+
+
+def get_sht_torrent_header(item_url):
+    h = sht_torrent_headers
+    h["Referer"] = item_url.strip()
+    return h
 
 
 if __name__ == '__main__':
