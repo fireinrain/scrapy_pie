@@ -6,7 +6,7 @@ import scrapy
 # 默认请求走了本地的shadowsocks代理
 from scrapy_pie.configure import sht_headers
 from scrapy_pie.items import ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem, \
-    ShtFilmFileResourceItem
+    ShtFilmImageResourceItem, ShtFilmTorrentResourceItem
 from scrapy_pie.utils import format_print, table_formate_print
 
 
@@ -258,11 +258,18 @@ class ShtorrentSpider(scrapy.Spider):
         table_formate_print(shtorrentfilm, head_template="|", end_template=None)
 
         # 相关文件下载
-        sht_film_file_resource_item = ShtFilmFileResourceItem()
-        sht_film_file_resource_item["code_and_title"] = str(code_and_title)
-        sht_film_file_resource_item["film_preview_url"] = [str(film_preview_url), str(film_preview_url2)]
-        # sht_film_file_resource_item["film_preview_url2"] = str(film_preview_url2)
-        sht_film_file_resource_item["torrent_url"] = str(torrent_url)
-        sht_film_file_resource_item["torrent_name"] = str(torrent_name)
-        sht_film_file_resource_item['parse_url'] = str(parse_url)
-        yield sht_film_file_resource_item
+        sht_film_image_resource_item = ShtFilmImageResourceItem()
+        sht_film_image_resource_item["code_and_title"] = str(code_and_title)
+        sht_film_image_resource_item["film_preview_url"] = [str(film_preview_url), str(film_preview_url2)]
+        # sht_film_image_resource_item["film_preview_url2"] = str(film_preview_url2)
+        # 处理imgs
+        yield sht_film_image_resource_item
+
+        sht_film_torrent_resource_item = ShtFilmTorrentResourceItem()
+        sht_film_torrent_resource_item["code_and_title"] = str(code_and_title)
+        sht_film_torrent_resource_item["torrent_url"] = [str(torrent_url), ]
+        sht_film_torrent_resource_item["torrent_name"] = str(torrent_name)
+        sht_film_torrent_resource_item['parse_url'] = str(parse_url)
+
+        # 处理torrent
+        yield sht_film_torrent_resource_item

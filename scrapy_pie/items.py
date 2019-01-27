@@ -33,7 +33,7 @@ class ShtCategoryItem(scrapy.Item):
     category_url = scrapy.Field()
 
 
-# 首页 数量统计
+# sht 首页 数量统计
 class ShtItemCountItem(scrapy.Item):
     # 有码
     code_kind = scrapy.Field()
@@ -45,7 +45,7 @@ class ShtItemCountItem(scrapy.Item):
     total = scrapy.Field()
 
 
-# 详情页面信息
+# sht详情页面信息
 class ShtorrentFilmItem(scrapy.Item):
     # 链接
     parse_url = scrapy.Field()
@@ -77,20 +77,25 @@ class ShtorrentFilmItem(scrapy.Item):
     torrent_name = scrapy.Field()
 
 
-# 单个页面的作品链接
+# sht单个页面的作品链接
 class ShtPageFilmListItem(scrapy.Item):
     # 首页单个页面的作品链接集合
     url_list = scrapy.Field()
 
 
-# 单个作品相关文件下载
-class ShtFilmFileResourceItem(scrapy.Item):
+# sht单个作品图片文件下载
+class ShtFilmImageResourceItem(scrapy.Item):
     # 番号 作品名(作为文件夹)
     code_and_title = scrapy.Field()
     # 封面链接
     film_preview_url = scrapy.Field()
     #  short view
     # film_preview_url2 = scrapy.Field()
+
+
+# sht 单个作品torrent下载
+class ShtFilmTorrentResourceItem(scrapy.Item):
+    code_and_title = scrapy.Field()
     # 种子链接
     torrent_url = scrapy.Field()
     # 种子名称

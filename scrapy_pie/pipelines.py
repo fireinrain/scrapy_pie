@@ -14,8 +14,9 @@ from scrapy.pipelines.images import ImagesPipeline
 
 # 使用异步入库 出现 [Failure instance: Traceback: <class 'AttributeError'>: 'Connection' object has no attribute '_result'
 from scrapy_pie.items import JavbusMiniItem, ShtCategoryItem, ShtItemCountItem, ShtorrentFilmItem, ShtPageFilmListItem, \
-    ShtFilmFileResourceItem
-from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique, format_print, get_sht_img_header
+    ShtFilmImageResourceItem, ShtFilmTorrentResourceItem
+from scrapy_pie.utils import to_mysql_daatetime, cut_item_url_for_unique, format_print, get_sht_img_header, \
+    get_sht_torrent_header
 
 
 class ScrapyPiePipeline(object):
@@ -175,7 +176,6 @@ class ShtorrentDataSyncStorePipeline(object):
                     self.crawler.engine.crawl(req, spider)
                     # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, meta={'item': item},dont_filter=True)
             # 不处理这个item了
-            raise DropItem()
         elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
                          "`film_format`,`film_size`,`film_code_flag`,`seed_period`,`film_preview_url`,`film_preview_url2`," \
@@ -244,34 +244,53 @@ class ShtorrentImageDownloadPipeline(ImagesPipeline):
 
     def get_media_requests(self, item, info):
         # 从item中获取要下载图片的url，根据url构造Request()对象，并返回该对象
-        if isinstance(item, ShtFilmFileResourceItem):
+        if isinstance(item, ShtFilmImageResourceItem):
             image_urls = item['film_preview_url']
+            print(f"img_urls:{image_urls}")
             for index, img_url in enumerate(image_urls):
                 # 把序号传过去
                 print(f"*****{img_url}")
-                yield Request(img_url, meta={'item': item, 'index': index}, headers=get_sht_img_header())
+                # 如果链接(没图片)为空 直接跳过
+                if not img_url:
+                    continue
+                yield Request(url=str(img_url), meta={'item': item, 'index': index}, headers=get_sht_img_header())
 
     def file_path(self, request, response=None, info=None):
         # 用来自定义图片的下载路径
         item = request.meta['item']
         index = request.meta['index']
-        return '%s.jpg' % str(index)
+        dir_name = item["code_and_title"].strip()
+        return f"{dir_name}/{index}.jpg"
+        # return '%s.jpg' % str(index)
 
     def item_completed(self, results, item, info):
         # 图片下载完成后，返回的结果results
-        if isinstance(item, ShtFilmFileResourceItem):
+        if isinstance(item, ShtFilmImageResourceItem):
             print(results)
         return item
 
 
 # sht torrent 下载的pipeline
 class ShtorrentTorrentDownloadPipeline(FilesPipeline):
-    # def get_media_requests(self, item, info):
-    #     return super().get_media_requests(item, info)
-    #
-    # def item_completed(self, results, item, info):
-    #     return super().item_completed(results, item, info)
-    #
-    # def file_path(self, request, response=None, info=None):
-    #     return super().file_path(request, response, info)
-    pass
+    def get_media_requests(self, item, info):
+        if isinstance(item, ShtFilmTorrentResourceItem):
+            torrent_url = item["torrent_url"][0]
+            parse_url = item["parse_url"]
+            header = get_sht_torrent_header(parse_url)
+            if not torrent_url:
+                pass
+            else:
+                print(f"****{torrent_url}")
+                print(f"header: {header}")
+                yield Request(url=str(torrent_url), meta={'item': item}, headers=header)
+
+    def file_path(self, request, response=None, info=None):
+        item = request.meta['item']
+        dir_name = item["code_and_title"]
+        torrent_name = item["torrent_name"].strip()
+        return f"{dir_name}/{torrent_name}"
+
+    def item_completed(self, results, item, info):
+        if isinstance(item, ShtFilmTorrentResourceItem):
+            print(results)
+        return item
