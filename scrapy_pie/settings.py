@@ -8,6 +8,7 @@
 #     https://doc.scrapy.org/en/latest/topics/settings.html
 #     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import datetime
 
 BOT_NAME = 'scrapy_pie'
 
@@ -32,7 +33,7 @@ DOWNLOAD_DELAY = 0.25
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
-COOKIES_ENABLED = False
+# COOKIES_ENABLED = False
 
 # Disable Telnet Console (enabled by default)
 # TELNETCONSOLE_ENABLED = False
@@ -74,7 +75,7 @@ ITEM_PIPELINES = {
     'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
     # shtorrent file
     # sht图片
-    'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
+    # 'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
     # sht torrent
     'scrapy_pie.pipelines.ShtorrentTorrentDownloadPipeline': 3,
 
@@ -131,3 +132,9 @@ IMAGES_URLS_FIELD = 'film_preview_url'
 FILES_STORE = './resourcedata/sht'
 # 文件下载路径字段
 FILES_URLS_FIELD = 'torrent_url'
+
+# 开启日志
+LOG_LEVEL = 'DEBUG'
+to_day = datetime.datetime.now()
+log_file_path = 'log/scrapy_{}_{}_{}.log'.format(to_day.year, to_day.month, to_day.day)
+LOG_FILE = log_file_path
