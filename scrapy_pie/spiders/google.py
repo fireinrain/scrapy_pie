@@ -9,6 +9,14 @@ class GoogleSpider(scrapy.Spider):
     allowed_domains = ['google.com']
     start_urls = ['http://google.com/']
 
+    # 为每个爬虫指定不同的pipeline
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'TestExceptionSpider.pipelines.TestexceptionspiderPipeline': 300,
+            'TestExceptionSpider.exceptionPipeline.ExceptionPipeline': 400
+        }
+    }
+
     def start_requests(self):
         # for url in self.start_urls:
         yield scrapy.Request(self.start_urls[0], callback=self.parse, headers=headers)

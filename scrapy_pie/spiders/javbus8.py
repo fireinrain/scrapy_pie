@@ -19,6 +19,13 @@ class Javbus8Spider(scrapy.Spider):
              'HstCns4021709=131; existmag=all; HstCla4021709=1547317510747; ' \
              'HstPn4021709=52; HstPt4021709=2318'
 
+    # 为每个爬虫指定不同的pipeline
+    custom_settings = {
+        'ITEM_PIPELINES': {
+            'scrapy_pie.pipelines.ScrapiesPipelineSync': 5,
+        }
+    }
+
     # page_url_set = set([start_urls[0], start_urls[0] + "page/1"])
 
     # pages = [start_urls[0] + "page/" + str(i) for i in range(2, 310)]

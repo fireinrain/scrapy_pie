@@ -69,8 +69,10 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     # 'scrapy_pie.pipelines.ScrapyPiePipeline': 300,
-    # javbus
-    'scrapy_pie.pipelines.ScrapiesPipelineSync': 5,
+
+    # javbus(在javbus中单独指定)
+    # 'scrapy_pie.pipelines.ScrapiesPipelineSync': 5,
+
     # shtorrent
     'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
     # shtorrent file
