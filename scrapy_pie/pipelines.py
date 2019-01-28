@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 import pymysql as MySQLdb
 import scrapy
 from scrapy import Request
@@ -113,7 +115,11 @@ class ShtorrentDataSyncStorePipeline(object):
         select_url = "select parse_url from sht_films"
         self.cursor.execute(select_url)
         result = self.cursor.fetchall()
+        # 不是完整的url，仅仅做重复判断
         self.url_dict = set([cut_item_url_for_unique(i["parse_url"]) for i in result])
+        # 测试
+        # self.url_dict = set([i["parse_url"] for i in result])
+
         # print(len(self.url_dict))
         self.crawler.url_list = self.url_dict
 
@@ -174,7 +180,12 @@ class ShtorrentDataSyncStorePipeline(object):
                     req = scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header,
                                          dont_filter=True)
                     self.crawler.engine.crawl(req, spider)
-                    # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, meta={'item': item},dont_filter=True)
+            # yield scrapy.Request(item_url, callback=spider.parse_file_page, headers=spider.header, meta={'item': item},dont_filter=True)
+            # for i in self.url_dict:
+            #     req = scrapy.Request(i, callback=spider.parse_file_page, headers=spider.header,
+            #                          dont_filter=True)
+            #     self.crawler.engine.crawl(req, spider)
+
             # 不处理这个item了
         elif isinstance(item, ShtorrentFilmItem):
             insert_sql = "insert into sht_films(`codes`,`code_and_title`,`film_name`,`film_stars`," \
@@ -222,18 +233,9 @@ class ShtorrentDataSyncStorePipeline(object):
 
 # sht 图片下载的pipeline
 class ShtorrentImageDownloadPipeline(ImagesPipeline):
-    """
-    twisted.python.failure.Failure builtins.AttributeError:
-    'ShtorrentImageDownloadPipeline' object has no attribute 'store'
-    问题： pipeline 怎么自定义一些属性？
-    """
-    # def __init__(self, store_path):
-    #     self.store_path = store_path
-    #
-    # @classmethod
-    # def from_settings(cls, settings):
-    #     store_path = settings["FILES_STORE"]
-    #     return cls(store_path)
+    # "twisted.python.failure.Failure builtins.AttributeError:
+    # 'ShtorrentImageDownloadPipeline' object has no attribute 'store'
+    # 问题： pipeline 怎么自定义一些属性？"
 
     def get_media_requests(self, item, info):
         # 从item中获取要下载图片的url，根据url构造Request()对象，并返回该对象
@@ -241,13 +243,22 @@ class ShtorrentImageDownloadPipeline(ImagesPipeline):
             image_urls = item['film_preview_url']
             print(f"img_urls:{image_urls}")
             # 检查本地是否有该文件图片
+            # print(f"#######{self.crawler.settings['FILES_STORE']}")
+            store_path = self.crawler.settings['FILES_STORE'].strip()
+            dir_name = item["code_and_title"].strip()
             for index, img_url in enumerate(image_urls):
                 # 把序号传过去
                 print(f"*****{img_url}")
                 # 如果链接(没图片)为空 直接跳过
-                if not img_url:
+                if not img_url or img_url == 'None':
                     continue
-                yield Request(url=str(img_url), meta={'item': item, 'index': index}, headers=get_sht_img_header())
+                else:
+                    if os.path.exists(f"{store_path}/{dir_name}/{index}.jpg"):
+                        print(f"该图片：{img_url}已下载，跳过")
+                        pass
+                    else:
+                        yield Request(url=str(img_url), meta={'item': item, 'index': index},
+                                      headers=get_sht_img_header())
 
     def file_path(self, request, response=None, info=None):
         # 用来自定义图片的下载路径
@@ -271,12 +282,21 @@ class ShtorrentTorrentDownloadPipeline(FilesPipeline):
             torrent_url = item["torrent_url"][0]
             parse_url = item["parse_url"]
             header = get_sht_torrent_header(parse_url)
-            if not torrent_url:
+            # 检查本地是否有该文件图片
+            # print(f"#######{self.crawler.settings['FILES_STORE']}")
+            store_path = self.crawler.settings['FILES_STORE'].strip()
+            dir_name = item["code_and_title"].strip()
+            torrent_name = item["torrent_name"].strip()
+            if not torrent_url or torrent_url == 'None':
                 pass
             else:
                 print(f"****{torrent_url}")
-                print(f"header: {header}")
-                yield Request(url=str(torrent_url), meta={'item': item}, headers=header)
+                # print(f"header: {header}")
+                if os.path.exists(f"{store_path}/{dir_name}/{torrent_name}"):
+                    print(f"该种子：{torrent_name}已下载，跳过")
+                    pass
+                else:
+                    yield Request(url=str(torrent_url), meta={'item': item}, headers=header)
 
     def file_path(self, request, response=None, info=None):
         item = request.meta['item']
