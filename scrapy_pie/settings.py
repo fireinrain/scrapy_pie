@@ -75,7 +75,7 @@ ITEM_PIPELINES = {
     'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
     # shtorrent file
     # sht图片
-    # 'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
+    'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
     # sht torrent
     'scrapy_pie.pipelines.ShtorrentTorrentDownloadPipeline': 3,
 

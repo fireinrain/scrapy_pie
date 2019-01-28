@@ -222,31 +222,25 @@ class ShtorrentDataSyncStorePipeline(object):
 
 # sht 图片下载的pipeline
 class ShtorrentImageDownloadPipeline(ImagesPipeline):
-    # def __init__(self, dbpool, store_path):
+    """
+    twisted.python.failure.Failure builtins.AttributeError:
+    'ShtorrentImageDownloadPipeline' object has no attribute 'store'
+    问题： pipeline 怎么自定义一些属性？
+    """
+    # def __init__(self, store_path):
     #     self.store_path = store_path
-    #     self.db = dbpool
-    #     self.cursor = self.db.cursor()
     #
     # @classmethod
     # def from_settings(cls, settings):
-    #     dbparams = dict(
-    #         host=settings['MYSQL_HOST'],
-    #         db=settings['MYSQL_DBNAME']["scrapy_pie"],
-    #         user=settings['MYSQL_USER'],
-    #         passwd=settings['MYSQL_PASS'],
-    #         charset='utf8',
-    #         cursorclass=MySQLdb.cursors.DictCursor,
-    #         use_unicode=True,
-    #     )
-    #     dbpool = MySQLdb.connect(**dbparams)
     #     store_path = settings["FILES_STORE"]
-    #     return cls(dbpool, store_path)
+    #     return cls(store_path)
 
     def get_media_requests(self, item, info):
         # 从item中获取要下载图片的url，根据url构造Request()对象，并返回该对象
         if isinstance(item, ShtFilmImageResourceItem):
             image_urls = item['film_preview_url']
             print(f"img_urls:{image_urls}")
+            # 检查本地是否有该文件图片
             for index, img_url in enumerate(image_urls):
                 # 把序号传过去
                 print(f"*****{img_url}")
