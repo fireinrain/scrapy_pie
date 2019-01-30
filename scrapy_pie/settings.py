@@ -121,10 +121,11 @@ ITEM_PIPELINES = {
 # MYSQL_PASS = '123456'
 
 # vm数据库(这里不集中定义，分散在spider的custom_setting中)
-# MYSQL_HOST = '192.168.11.117'
-# MYSQL_DBNAME = {"scrapy_pie": "scrapy_pie_db"}
-# MYSQL_USER = 'root'
-# MYSQL_PASS = 'sunriseme1994'
+# 数据库共用
+MYSQL_HOST = '192.168.11.117'
+MYSQL_DBNAME = {"scrapy_pie": "scrapy_pie_db"}
+MYSQL_USER = 'root'
+MYSQL_PASS = 'sunriseme1994'
 # # 配置图片的保存目录
 # IMAGES_STORE = './resourcedata/sht'
 # # 在ImagesPipeline进行下载图片是，配置图片对应的Item字段

@@ -103,7 +103,7 @@ class ScrapiesPipelineSync(object):
         self.db.close()
 
 
-################################################
+###########################_Shtorrent_########################
 
 # shtorrent 同步入库
 class ShtorrentDataSyncStorePipeline(object):
@@ -308,3 +308,7 @@ class ShtorrentTorrentDownloadPipeline(FilesPipeline):
         if isinstance(item, ShtFilmTorrentResourceItem):
             print(results)
         return item
+############################### Shtorrent End ##################################################
+
+
+
