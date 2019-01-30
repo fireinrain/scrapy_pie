@@ -4,16 +4,15 @@ import scrapy
 from scrapy_pie.configure import headers
 
 
-class GoogleSpider(scrapy.Spider):
-    name = 'google'
-    allowed_domains = ['google.com']
-    start_urls = ['http://google.com/']
+class ThztorrentSpider(scrapy.Spider):
+    name = 'thztorrent'
+    allowed_domains = ['thzvv.net']
+    start_urls = ['http://thzvv.net/', ]
 
     # 为每个爬虫指定不同的pipeline
     custom_settings = {
         'ITEM_PIPELINES': {
-            'TestExceptionSpider.pipelines.TestexceptionspiderPipeline': 300,
-            'TestExceptionSpider.exceptionPipeline.ExceptionPipeline': 400
+
         }
     }
 
