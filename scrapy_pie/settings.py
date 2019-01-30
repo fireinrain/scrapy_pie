@@ -74,12 +74,12 @@ ITEM_PIPELINES = {
     # 'scrapy_pie.pipelines.ScrapiesPipelineSync': 5,
 
     # shtorrent
-    'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
+    # 'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
     # shtorrent file
     # sht图片
-    'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
+    # 'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
     # sht torrent
-    'scrapy_pie.pipelines.ShtorrentTorrentDownloadPipeline': 3,
+    # 'scrapy_pie.pipelines.ShtorrentTorrentDownloadPipeline': 3,
 
     # 启用scrapy自带的图片下载ImagesPipeline
     'scrapy.pipelines.images.ImagesPipeline': None,
@@ -120,20 +120,20 @@ ITEM_PIPELINES = {
 # MYSQL_USER = 'root'
 # MYSQL_PASS = '123456'
 
-# vm数据库
-MYSQL_HOST = '192.168.11.117'
-MYSQL_DBNAME = {"scrapy_pie": "scrapy_pie_db"}
-MYSQL_USER = 'root'
-MYSQL_PASS = 'sunriseme1994'
-# 配置图片的保存目录
-IMAGES_STORE = './resourcedata/sht'
-# 在ImagesPipeline进行下载图片是，配置图片对应的Item字段
-# 图片下载链接字段
-IMAGES_URLS_FIELD = 'film_preview_url'
-# 文件的保存目录 ./resourcedata/sht
-FILES_STORE = './resourcedata/sht'
-# 文件下载路径字段
-FILES_URLS_FIELD = 'torrent_url'
+# vm数据库(这里不集中定义，分散在spider的custom_setting中)
+# MYSQL_HOST = '192.168.11.117'
+# MYSQL_DBNAME = {"scrapy_pie": "scrapy_pie_db"}
+# MYSQL_USER = 'root'
+# MYSQL_PASS = 'sunriseme1994'
+# # 配置图片的保存目录
+# IMAGES_STORE = './resourcedata/sht'
+# # 在ImagesPipeline进行下载图片是，配置图片对应的Item字段
+# # 图片下载链接字段
+# IMAGES_URLS_FIELD = 'film_preview_url'
+# # 文件的保存目录 ./resourcedata/sht
+# FILES_STORE = './resourcedata/sht'
+# # 文件下载路径字段
+# FILES_URLS_FIELD = 'torrent_url'
 
 # 开启日志
 # LOG_LEVEL = 'DEBUG'

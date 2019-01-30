@@ -21,6 +21,35 @@ class ShtorrentSpider(scrapy.Spider):
     # 是否需要爬去
     need_scrapy = True
 
+    custom_settings = {
+        # Item pipeline
+        'ITEM_PIPELINES': {
+
+            # shtorrent
+            'scrapy_pie.pipelines.ShtorrentDataSyncStorePipeline': 6,
+            # shtorrent file
+            # sht图片
+            'scrapy_pie.pipelines.ShtorrentImageDownloadPipeline': 1,
+            # sht torrent
+            'scrapy_pie.pipelines.ShtorrentTorrentDownloadPipeline': 3,
+
+        },
+        # vm数据库
+        'MYSQL_HOST': '192.168.11.117',
+        'MYSQL_DBNAME': {"scrapy_pie": "scrapy_pie_db"},
+        'MYSQL_USER': 'root',
+        'MYSQL_PASS': 'sunriseme1994',
+        # 配置图片的保存目录
+        'IMAGES_STORE': './resourcedata/sht',
+        # 在ImagesPipeline进行下载图片是，配置图片对应的Item字段
+        # 图片下载链接字段
+        'IMAGES_URLS_FIELD': 'film_preview_url',
+        # 文件的保存目录 ./resourcedata/sht
+        'FILES_STORE': './resourcedata/sht',
+        # 文件下载路径字段
+        'FILES_URLS_FIELD': 'torrent_url',
+    }
+
     # 作品链接
     films_link_list = []
 
