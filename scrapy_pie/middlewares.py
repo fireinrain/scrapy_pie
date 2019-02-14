@@ -132,7 +132,7 @@ class ScrapyPieProxyDownMiddleware(object):
 
         if spider.name in ['javbus8', 'shtorrent']:
             # 这里的ip可能会变，注意
-            request.meta['proxy'] = "http://10.8.0.15:1081"
+            request.meta['proxy'] = "http://10.8.0.115:1081"
             spider.logger.info(f"正在使用ss代理：{request.meta['proxy']}")
         else:
             spider.logger.info(f"不使用代理")
