@@ -9,7 +9,7 @@
 @contact: lzycoder.vip@gmail.com
 @license: (C) Copyright 2015-2018, Node Supply Chain Manager Corporation Limited.
 """
-from .db_utils import cursor
+from scrapy_pie.db_utils import cursor
 
 
 def compute_total_size():
@@ -17,17 +17,32 @@ def compute_total_size():
     计算数据库中的所有大小
     :return:
     """
-    sql = "select `file_size` from info"
-    result = cursor.execute(sql)
-    all_size = [float(i[0][:-2]) for i in result]
-    # 总大小：3043.4000000000037GB
-    # 平均大小：5.57GB
-    # 数量：
-
+    sql = "select `film_size` from sht_films"
+    cursor.execute(sql)
+    # 这里和sqlite不一样
+    # sqlite 执行excute后 可以直接获取结果集合
+    # 但是mysql 需要使用cursor.fetchall()
+    result = cursor.fetchall()
+    count = len(result)
+    # print(result)
+    all_size = 0
+    for i in result:
+        if 'GB' in i[0]:
+            # print(i)
+            value = i[0][:-2]
+            all_size+=float(value)
+        else:
+            value = float(i[0].split('.')[0])
+            all_size+=value
+    # all_size = [float(i[0][:-2]) for i in result]
+    # # 总大小：3043.4000000000037GB
+    # # 平均大小：5.57GB
+    # # 数量：
+    #
     statics = f"""
-    总大小：{sum(all_size)}GB
-    平均大小：{float(sum(all_size) / len(all_size))}GB
-    数量：{len(all_size)}
+    总大小：{all_size}GB
+    平均大小：{all_size / count}GB
+    数量：{count}
     """
     print(statics)
 
@@ -37,8 +52,9 @@ def compute_star_count():
     计算有多少演员
     :return:
     """
-    sql = "select `av_stars` from info"
-    result = cursor.execute(sql)
+    sql = "select `film_stars` from sht_films"
+    cursor.execute(sql)
+    result = cursor.fetchall()
     stars_collection = [i[0] for i in result]
     # print(stars_collection)
 
