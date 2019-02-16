@@ -153,6 +153,13 @@ def get_sht_torrent_header(item_url):
     return h
 
 
+def parse_item_field_correct():
+    """
+    正确解析film的各个字段（有好几种）
+    :return:
+    """
+    pass
+
 if __name__ == '__main__':
     print(to_mysql_daatetime())
     test_str = "Your spider is running now!"

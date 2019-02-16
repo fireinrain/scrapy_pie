@@ -144,7 +144,7 @@ class ShtorrentSpider(scrapy.Spider):
         page_url_list["url_list"] = per_item_urls
         yield page_url_list
 
-        # TODO 只爬取更新了的作品页面
+        # 只爬取更新了的作品页面
         # 对每一页的film url请求
         # for url in per_item_urls:
         #     yield scrapy.Request(url, callback=self.parse_file_page, headers=self.header, dont_filter=True)
