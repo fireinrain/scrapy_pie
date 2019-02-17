@@ -229,6 +229,13 @@ class ShtorrentDataSyncStorePipeline(object):
         # self.db.commit()
         self.cursor.close()
         self.db.close()
+        # 打印统计的数据
+        from scrapy_pie.data_statics import compute_star_count
+        from scrapy_pie.data_statics import compute_total_size
+        print("-------------------------最新统计分析----------------------------")
+        compute_total_size()
+        compute_star_count()
+
 
 
 # sht 图片下载的pipeline
