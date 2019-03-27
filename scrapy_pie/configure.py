@@ -47,5 +47,8 @@ sht_headers = {
     'Accept-Language': 'zh-CN,zh;q=0.8',
     'upgrade-insecure-requests': '1',
     'cache-control': 'no-cache',
-    'pragma': 'no-cache'
+    'pragma': 'no-cache',
+    'Host':'www.sehuatang.org',
+    'Referer':'https://www.sehuatang.org/forum.php'
 }
+
